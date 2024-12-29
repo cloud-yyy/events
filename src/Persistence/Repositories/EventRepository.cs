@@ -10,30 +10,25 @@ public class EventRepository(
 ) : IEventRepository
 {
     public async Task<IPagedList<Event>> GetAllAsync
-        (int pageNumber, int pageSize, CancellationToken token = default)
+        (int pageNumber, int pageSize, EventFilter? filter = null, CancellationToken token = default)
     {
-        var query = _context.Events.AsQueryable();
-        return await PagedList<Event>.CreateAsync(query, pageNumber, pageSize, token);
-    }
+        var query = _context.Events
+            .Include(e => e.Image)
+            .AsQueryable();
 
-    public async Task<IPagedList<Event>> GetByFilterAsync
-        (EventFilter filter, int pageNumber, int pageSize, CancellationToken token = default)
-    {
-        var query = _context.Events.AsQueryable();
-
-        if (filter.Date is not null)
+        if (filter?.Date is not null)
         {
             query = query.Where(e => DateOnly.FromDateTime(e.Date) == filter.Date);
         }
 
-        if (filter.Category is not null)
+        if (filter?.Category is not null)
         {
             query = query.Where(e => 
                 string.Compare(e.Category, filter.Category, StringComparison.InvariantCultureIgnoreCase) == 0
             );
         }
     
-        if (filter.Place is not null)
+        if (filter?.Place is not null)
         {
             query = query.Where(e => 
                 string.Compare(e.Place, filter.Place, StringComparison.InvariantCultureIgnoreCase) == 0
@@ -45,12 +40,15 @@ public class EventRepository(
 
     public async Task<Event?> GetByIdAsync(Guid id, CancellationToken token = default)
     {
-        return await _context.Events.FindAsync([id], token);
+        return await _context.Events
+            .Include(e => e.Image)
+            .SingleOrDefaultAsync(e => e.Id == id, token);
     }
 
     public async Task<Event?> GetByNameAsync(string name, CancellationToken token = default)
     {
         return await _context.Events
+            .Include(e => e.Image)
             .SingleOrDefaultAsync(e => e.Name == name, token);
     }
 
@@ -65,9 +63,10 @@ public class EventRepository(
         return await PagedList<User>.CreateAsync(query, pageNumber, pageSize, token);
     }
 
-    public void Add(Event @event)
+    public Event Add(Event @event)
     {
         _context.Events.Add(@event);
+        return @event;
     }
 
     public void Delete(Event @event)
@@ -75,9 +74,10 @@ public class EventRepository(
         _context.Events.Remove(@event);
     }
 
-    public void Update(Event @event)
+    public Event Update(Event @event)
     {
         _context.Events.Attach(@event);
         _context.Entry(@event).State = EntityState.Modified;
+        return @event;
     }
 }

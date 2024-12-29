@@ -8,9 +8,10 @@ public class RoleRepository(
     ApplicationDbContext _context
 ) : IRoleRepository
 {
-    public void Add(Role role)
+    public Role Add(Role role)
     {
         _context.Roles.Add(role);
+        return role;
     }
 
     public void Delete(Role role)

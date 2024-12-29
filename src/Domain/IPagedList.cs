@@ -1,3 +1,5 @@
+using System.Linq.Expressions;
+
 namespace Domain;
 
 public interface IPagedList<T>
@@ -10,4 +12,6 @@ public interface IPagedList<T>
 
     public bool HasNextPage { get; }
     public bool HasPreviousPage { get; }
+
+    public IPagedList<K> ConvertTo<K>(Expression<Func<T, K>> selector);
 }

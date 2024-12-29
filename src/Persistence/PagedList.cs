@@ -1,3 +1,4 @@
+using System.Linq.Expressions;
 using Domain;
 using Microsoft.EntityFrameworkCore;
 
@@ -32,5 +33,15 @@ public class PagedList<T> : IPagedList<T>
             .ToListAsync(token);
         
         return new PagedList<T>(items, page, pageSize, totalCount);
+    }
+
+    public IPagedList<K> ConvertTo<K>(Expression<Func<T, K>> selector)
+    {
+        return new PagedList<K>(
+            Items.Select(i => selector.Compile()(i)).ToList(), 
+            PageNumber, 
+            PageSize, 
+            TotalCount
+        );
     }
 }

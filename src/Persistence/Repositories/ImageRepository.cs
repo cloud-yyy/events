@@ -7,9 +7,10 @@ public class ImageRepository(
     ApplicationDbContext _context
 ) : IImageRepository
 {
-    public void Add(Image image)
+    public Image Add(Image image)
     {
         _context.Images.Add(image);
+        return image;
     }
 
     public void Delete(Image image)

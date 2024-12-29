@@ -7,9 +7,10 @@ public class RegistrationRepository(
     ApplicationDbContext _context
 ) : IRegistrationRepository
 {
-    public void Add(Registration registration)
+    public Registration Add(Registration registration)
     {
         _context.Set<Registration>().Add(registration);
+        return registration;
     }
 
     public void Remove(Registration registration)

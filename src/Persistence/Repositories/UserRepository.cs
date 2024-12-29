@@ -8,9 +8,10 @@ public class UserRepository(
     ApplicationDbContext _context
 ) : IUserRepository
 {
-    public void Add(User user)
+    public User Add(User user)
     {
         _context.Users.Add(user);
+        return user;
     }
 
     public async Task<User?> GetByIdAsync(Guid id, CancellationToken token = default)
