@@ -17,23 +17,13 @@ public class EventRepository(
             .AsQueryable();
 
         if (filter?.Date is not null)
-        {
-            query = query.Where(e => DateOnly.FromDateTime(e.Date) == filter.Date);
-        }
+            query = query.Where(e => e.Date == filter.Date);
 
         if (filter?.Category is not null)
-        {
-            query = query.Where(e => 
-                string.Compare(e.Category, filter.Category, StringComparison.InvariantCultureIgnoreCase) == 0
-            );
-        }
+            query = query.Where(e => e.Category.ToLower().Contains(filter.Category.ToLower()));
     
         if (filter?.Place is not null)
-        {
-            query = query.Where(e => 
-                string.Compare(e.Place, filter.Place, StringComparison.InvariantCultureIgnoreCase) == 0
-            );
-        }
+            query = query.Where(e => e.Place.ToLower().Contains(filter.Place.ToLower()));
 
         return await PagedList<Event>.CreateAsync(query, pageNumber, pageSize, token);
     }

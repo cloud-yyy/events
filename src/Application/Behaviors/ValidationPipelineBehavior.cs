@@ -2,16 +2,16 @@ using Ardalis.Result;
 using FluentValidation;
 using MediatR;
 
-namespace Application.Behaviours;
+namespace Application.Behaviors;
 
-public class ValidationPipelineBehaviour<TRequest, TResponse>
+public class ValidationPipelineBehavior<TRequest, TResponse>
     : IPipelineBehavior<TRequest, TResponse>
     where TRequest : IRequest<TResponse>
     where TResponse : Result
 {
     private readonly IEnumerable<IValidator<TRequest>> _validators;
 
-    public ValidationPipelineBehaviour(IEnumerable<IValidator<TRequest>> validators)
+    public ValidationPipelineBehavior(IEnumerable<IValidator<TRequest>> validators)
     {
         _validators = validators;
     }

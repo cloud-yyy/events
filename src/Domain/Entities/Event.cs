@@ -8,7 +8,7 @@ public class Event
     public string Place { get; set; } = string.Empty;
     public string Category { get; set; } = string.Empty;
     public int MaxParticipants { get; set; }
-    public DateTime Date { get; set; }
+    public DateOnly Date { get; set; }
 
     public Guid? ImageId { get; set; }
     public Image? Image { get; set; }

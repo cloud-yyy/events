@@ -9,7 +9,7 @@ public record CreateEventCommand(
     string Place,
     string Category,
     int MaxParticipants,
-    DateTime Date,
+    DateOnly Date,
     // TODO: Add real images
     string ImageUrl
 ) : ICommand<EventDto>;

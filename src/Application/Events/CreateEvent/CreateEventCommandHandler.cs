@@ -18,8 +18,12 @@ public class CreateEventCommandHandler(
     public async Task<Result<EventDto>> Handle
         (CreateEventCommand request, CancellationToken cancellationToken)
     {
-        if (_eventRepository.GetByNameAsync(request.Name, cancellationToken) is not null)
-            return Result.Error($"Event with name {request.Name} already exists");
+        if (await _eventRepository.GetByNameAsync(request.Name, cancellationToken) is not null)
+        {
+            return Result.Invalid(
+                new ValidationError(nameof(request.Name), $"Event with name {request.Name} already exists")
+            );
+        }
 
         // TODO: Add real image processing
         var image = new Image { Url = request.ImageUrl };
