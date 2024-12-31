@@ -10,5 +10,8 @@ public class MappingProfile : Profile
     {
         CreateMap<Event, EventDto>();
         CreateMap<Image, ImageDto>();
+        CreateMap<User, UserDto>();
+        CreateMap<Role, RoleDto>();
+        CreateMap<Registration, RegistrationDto>();
     }
 }

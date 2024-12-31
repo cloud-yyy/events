@@ -36,10 +36,5 @@ public class EventConfiguration : IEntityTypeConfiguration<Event>
         builder
             .HasOne(e => e.Image)
             .WithOne();
-
-        builder
-            .HasMany(e => e.Participants)
-            .WithMany(u => u.EventsParticipatedIn)
-            .UsingEntity<Registration>(cjet => cjet.ToTable("registrations"));
     }
 }

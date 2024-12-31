@@ -11,5 +11,5 @@ public class User
     public Guid RoleId { get; set; }
     public Role? Role { get; set; }
 
-    public IEnumerable<Event> EventsParticipatedIn { get; set; } = [];
+    public ICollection<Event> EventsParticipatedIn { get; set; } = [];
 }

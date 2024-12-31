@@ -47,7 +47,7 @@ namespace Persistence.Migrations
                     place = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
                     category = table.Column<string>(type: "character varying(40)", maxLength: 40, nullable: false),
                     max_participants = table.Column<int>(type: "integer", nullable: false),
-                    date = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    date = table.Column<DateOnly>(type: "date", nullable: false),
                     image_id = table.Column<Guid>(type: "uuid", nullable: true)
                 },
                 constraints: table =>
@@ -92,7 +92,7 @@ namespace Persistence.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("pk_registrations", x => new { x.event_id, x.user_id });
+                    table.PrimaryKey("pk_registrations", x => new { x.user_id, x.event_id });
                     table.ForeignKey(
                         name: "fk_registrations_events_event_id",
                         column: x => x.event_id,
@@ -100,7 +100,7 @@ namespace Persistence.Migrations
                         principalColumn: "id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "fk_registrations_users_user_id",
+                        name: "fk_registrations_events_user_id",
                         column: x => x.user_id,
                         principalTable: "users",
                         principalColumn: "id",
@@ -112,8 +112,8 @@ namespace Persistence.Migrations
                 columns: new[] { "id", "name" },
                 values: new object[,]
                 {
-                    { new Guid("7daa3185-e940-46de-ad2c-575d1fc75e02"), "User" },
-                    { new Guid("889b0538-4d4c-4cfe-8384-b1f8698622b9"), "Admin" }
+                    { new Guid("0b6a6de5-ea88-4cdd-90b2-4f6f659b3b99"), "Admin" },
+                    { new Guid("b73adebc-5e0f-4bd5-9d7d-e491c98f6c91"), "User" }
                 });
 
             migrationBuilder.CreateIndex(
@@ -129,9 +129,9 @@ namespace Persistence.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "ix_registrations_user_id",
+                name: "ix_registrations_event_id",
                 table: "registrations",
-                column: "user_id");
+                column: "event_id");
 
             migrationBuilder.CreateIndex(
                 name: "ix_roles_name",
@@ -148,8 +148,7 @@ namespace Persistence.Migrations
             migrationBuilder.CreateIndex(
                 name: "ix_users_role_id",
                 table: "users",
-                column: "role_id",
-                unique: true);
+                column: "role_id");
         }
 
         /// <inheritdoc />

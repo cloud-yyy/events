@@ -100,23 +100,23 @@ namespace Persistence.Migrations
 
             modelBuilder.Entity("Domain.Entities.Registration", b =>
                 {
-                    b.Property<Guid>("EventId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("event_id");
-
                     b.Property<Guid>("UserId")
                         .HasColumnType("uuid")
                         .HasColumnName("user_id");
+
+                    b.Property<Guid>("EventId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("event_id");
 
                     b.Property<DateTime>("RegistrationDate")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("registration_date");
 
-                    b.HasKey("EventId", "UserId")
+                    b.HasKey("UserId", "EventId")
                         .HasName("pk_registrations");
 
-                    b.HasIndex("UserId")
-                        .HasDatabaseName("ix_registrations_user_id");
+                    b.HasIndex("EventId")
+                        .HasDatabaseName("ix_registrations_event_id");
 
                     b.ToTable("registrations", (string)null);
                 });
@@ -145,12 +145,12 @@ namespace Persistence.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("6191d465-6d8d-4908-8871-9859e60f39d6"),
+                            Id = new Guid("0b6a6de5-ea88-4cdd-90b2-4f6f659b3b99"),
                             Name = "Admin"
                         },
                         new
                         {
-                            Id = new Guid("d34ce118-31c4-47a0-9b5e-a593daf8753d"),
+                            Id = new Guid("b73adebc-5e0f-4bd5-9d7d-e491c98f6c91"),
                             Name = "User"
                         });
                 });
@@ -195,7 +195,6 @@ namespace Persistence.Migrations
                         .HasDatabaseName("ix_users_email");
 
                     b.HasIndex("RoleId")
-                        .IsUnique()
                         .HasDatabaseName("ix_users_role_id");
 
                     b.ToTable("users", (string)null);
@@ -213,26 +212,30 @@ namespace Persistence.Migrations
 
             modelBuilder.Entity("Domain.Entities.Registration", b =>
                 {
-                    b.HasOne("Domain.Entities.Event", null)
+                    b.HasOne("Domain.Entities.Event", "Event")
                         .WithMany()
                         .HasForeignKey("EventId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
                         .HasConstraintName("fk_registrations_events_event_id");
 
-                    b.HasOne("Domain.Entities.User", null)
+                    b.HasOne("Domain.Entities.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("fk_registrations_users_user_id");
+                        .HasConstraintName("fk_registrations_events_user_id");
+
+                    b.Navigation("Event");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Domain.Entities.User", b =>
                 {
                     b.HasOne("Domain.Entities.Role", "Role")
-                        .WithOne()
-                        .HasForeignKey("Domain.Entities.User", "RoleId")
+                        .WithMany()
+                        .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
                         .HasConstraintName("fk_users_roles_role_id");

@@ -44,6 +44,6 @@ public class CreateEventCommandHandler(
 
         await _unitOfWork.SaveChangesAsync(cancellationToken);
 
-        return Result.Success(_mapper.Map<EventDto>(@event));
+        return Result.Created(_mapper.Map<EventDto>(@event));
     }
 }

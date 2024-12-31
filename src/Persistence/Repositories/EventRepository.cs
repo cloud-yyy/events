@@ -42,17 +42,6 @@ public class EventRepository(
             .SingleOrDefaultAsync(e => e.Name == name, token);
     }
 
-    public async Task<IPagedList<User>> GetParticipantsAsync
-        (Guid eventId, int pageNumber, int pageSize, CancellationToken token = default)
-    {
-        var query = _context.Events
-            .Where(e => e.Id == eventId)
-            .Include(e => e.Participants)
-            .SelectMany(e => e.Participants);
-
-        return await PagedList<User>.CreateAsync(query, pageNumber, pageSize, token);
-    }
-
     public Event Add(Event @event)
     {
         _context.Events.Add(@event);

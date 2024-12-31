@@ -10,8 +10,6 @@ public interface IEventRepository
         (string name, CancellationToken token = default);
     public Task<Event?> GetByIdAsync
         (Guid id, CancellationToken token = default);
-    public Task<IPagedList<User>> GetParticipantsAsync
-        (Guid eventId, int pageNumber, int pageSize, CancellationToken token = default);
     public Event Add(Event @event);
     public Event Update(Event @event);
     public void Delete(Event @event);

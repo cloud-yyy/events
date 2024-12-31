@@ -17,7 +17,6 @@ namespace Presentation.Controllers;
 public class EventsController(ISender sender) : ApiController(sender)
 {
     [HttpGet]
-    // TODO: check what type is better to return, IActionResult or smth like this
     public async Task<ActionResult<IPagedList<EventDto>>> GetAll(
         int pageNumber = 1, 
         int pageSize = 2,

@@ -1,6 +1,6 @@
 namespace Application.Dtos;
 
-public record class EventDto(
+public record EventDto(
     Guid Id,
     string Name,
     string Description,

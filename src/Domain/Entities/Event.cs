@@ -13,5 +13,5 @@ public class Event
     public Guid? ImageId { get; set; }
     public Image? Image { get; set; }
 
-    public IEnumerable<User> Participants { get; set; } = [];
+    public ICollection<User> Participants { get; set; } = [];
 }

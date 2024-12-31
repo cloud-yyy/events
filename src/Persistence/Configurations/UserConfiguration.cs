@@ -29,6 +29,11 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
 
         builder
             .HasOne(b => b.Role)
-            .WithOne();
+            .WithMany();
+
+        builder
+            .HasMany(u => u.EventsParticipatedIn)
+            .WithMany(e => e.Participants)
+            .UsingEntity<Registration>(cjet => cjet.ToTable("registrations"));
     }
 }
