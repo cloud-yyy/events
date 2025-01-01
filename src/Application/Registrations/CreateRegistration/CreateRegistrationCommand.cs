@@ -3,4 +3,4 @@ using Application.Dtos;
 
 namespace Application.Registrations.CreateRegistration;
 
-public record CreateRegistrationCommand(Guid UserId, Guid EventId) : ICommand<RegistrationDto>;
+public record CreateRegistrationCommand(Guid UserId, Guid EventId) : ICommand<ParticipantDto>;

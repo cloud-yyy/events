@@ -17,12 +17,14 @@ public class UserRepository(
     public async Task<User?> GetByIdAsync(Guid id, CancellationToken token = default)
     {
         return await _context.Users
-            .FindAsync([id], token);
+            .Include(u => u.Role)
+            .SingleOrDefaultAsync(u => u.Id == id, token);
     }
 
     public async Task<User?> GetByEmailAsync(string email, CancellationToken token = default)
     {
         return await _context.Users
+            .Include(u => u.Role)
             .SingleOrDefaultAsync(u => u.Email == email, token);
     }
 }

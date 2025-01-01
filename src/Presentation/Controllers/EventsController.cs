@@ -7,7 +7,9 @@ using Application.Events.GetEventByName;
 using Application.Events.UpdateEvent;
 using Ardalis.Result.AspNetCore;
 using Domain;
+using Infrastructure.Authorization;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Presentation.Requests;
 
@@ -53,6 +55,7 @@ public class EventsController(ISender sender) : ApiController(sender)
         return this.ToActionResult(result);
     }
 
+    [Authorize(Policy = PolicyNames.Admin)]
     [HttpPost]
     public async Task<ActionResult<EventDto>> Create([FromBody] CreateEventRequest request)
     {
@@ -71,6 +74,7 @@ public class EventsController(ISender sender) : ApiController(sender)
         return this.ToActionResult(result);
     }
 
+    [Authorize(Policy = PolicyNames.Admin)]
     [HttpPut]
     [Route("{id:guid}")]
     public async Task<ActionResult<EventDto>> Update([FromRoute] Guid id, [FromBody] UpdateEventRequest request)
@@ -91,6 +95,7 @@ public class EventsController(ISender sender) : ApiController(sender)
         return this.ToActionResult(result);
     }
 
+    [Authorize(Policy = PolicyNames.Admin)]
     [HttpDelete]
     [Route("{id:guid}")]
     public async Task<ActionResult> Delete([FromRoute] Guid id)

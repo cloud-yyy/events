@@ -1,7 +1,6 @@
 namespace Application.Dtos;
 
-public record RegistrationDto(
+public record class ParticipantDto(
     UserDto User,
-    EventDto Event,
     DateTime RegistrationDate
 );

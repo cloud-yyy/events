@@ -11,9 +11,9 @@ public class GetEventParticipantsQueryHandler(
     IEventRepository _eventRepository,
     IRegistrationRepository _registrationRepository,
     IMapper _mapper
-) : IQueryHandler<GetEventParticipantsQuery, IPagedList<RegistrationDto>>
+) : IQueryHandler<GetEventParticipantsQuery, IPagedList<ParticipantDto>>
 {
-    public async Task<Result<IPagedList<RegistrationDto>>> Handle
+    public async Task<Result<IPagedList<ParticipantDto>>> Handle
         (GetEventParticipantsQuery request, CancellationToken cancellationToken)
     {
         var @event = await _eventRepository.GetByIdAsync(request.EventId, cancellationToken);
@@ -24,6 +24,6 @@ public class GetEventParticipantsQueryHandler(
         var registrations = await _registrationRepository.GetParticipantsAsync
             (@event.Id, request.PageNumber, request.PageSize, cancellationToken);
 
-        return Result.Success(registrations.ConvertTo(e => _mapper.Map<RegistrationDto>(e)));
+        return Result.Success(registrations.ConvertTo(e => _mapper.Map<ParticipantDto>(e)));
     }
 }
