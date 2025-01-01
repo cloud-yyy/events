@@ -10,12 +10,14 @@ using Infrastructure.Authentication;
 using Infrastructure.Authorization;
 using Infrastructure.Authorization.Handlers;
 using Infrastructure.Authorization.Requirements;
+using Infrastructure.Email;
 using Infrastructure.Options;
 using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
 using Persistence;
 using Persistence.Repositories;
 using Web.Middlewares;
@@ -46,6 +48,31 @@ builder.Services
     .AddControllers()
     .AddApplicationPart(typeof(Presentation.Controllers.ApiController).Assembly
 );
+
+builder.Services.AddSwaggerGen(options =>
+{
+    options.SwaggerDoc("v1", new OpenApiInfo { Title = "Events", Version = "v1" });
+
+    options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    {
+        In = ParameterLocation.Header,
+        Description = "Please enter a valid token",
+        Name = "Authorization",
+        Type = SecuritySchemeType.Http,
+        BearerFormat = "JWT",
+        Scheme = "Bearer"
+    });
+
+    options.AddSecurityRequirement(new OpenApiSecurityRequirement
+    {{
+        new OpenApiSecurityScheme
+        {
+            Reference = new OpenApiReference
+                { Type = ReferenceType.SecurityScheme, Id = "Bearer" }
+        },
+        []
+    }});
+});
 
 builder.Services.AddMediatR(configuration => 
 {
@@ -97,6 +124,13 @@ builder.Services.AddScoped<IAuthorizationHandler, SameUserRequirementHandler>();
 
 builder.Services.AddHttpContextAccessor();
 
+builder.Services
+    .AddFluentEmail(builder.Configuration["Email:SenderEmail"], builder.Configuration["Email:SenderName"])
+    .AddSmtpSender(builder.Configuration["Email:Host"], builder.Configuration.GetValue<int>("EmailPort"));
+
+builder.Services.AddScoped<LinkFactory>();
+builder.Services.AddScoped<IEmailSender, FluentEmailSender>();
+
 var app = builder.Build();
 
 using (var scope = app.Services.CreateScope())
@@ -112,5 +146,12 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+
+app.UseSwagger();
+
+app.UseSwaggerUI(c =>
+{
+	c.SwaggerEndpoint("/swagger/v1/swagger.json", "events");
+});
 
 app.Run();

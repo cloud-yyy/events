@@ -19,6 +19,7 @@ namespace Presentation.Controllers;
 public class EventsController(ISender sender) : ApiController(sender)
 {
     [HttpGet]
+    [Route("", Name = "GetAllEvents")]
     public async Task<ActionResult<IPagedList<EventDto>>> GetAll(
         int pageNumber = 1, 
         int pageSize = 2,
@@ -34,7 +35,7 @@ public class EventsController(ISender sender) : ApiController(sender)
     }
 
     [HttpGet]
-    [Route("{id:guid}")]
+    [Route("{id:guid}", Name = "GetEventById")]
     public async Task<ActionResult<EventDto>> GetById([FromRoute] Guid id)
     {
         var query = new GetEventByIdQuery(id);

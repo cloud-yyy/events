@@ -12,7 +12,9 @@ public class UpdateEventCommandHandler(
     IEventRepository _eventRepository,
     IImageRepository _imageRepository,
     IUnitOfWork _unitOfWork,
-    IMapper _mapper
+    IMapper _mapper,
+    IEmailSender _emailSender,
+    LinkFactory _linkFactory
 ) : ICommandHandler<UpdateEventCommand, EventDto>
 {
     public async Task<Result<EventDto>> Handle(UpdateEventCommand request, CancellationToken cancellationToken)
@@ -28,20 +30,30 @@ public class UpdateEventCommandHandler(
         eventEntity.MaxParticipants = request.MaxParticipants;
         eventEntity.Date = request.Date;
 
-        if (request.ImageUrl != eventEntity.Image?.Url)
-        {
-            if (eventEntity.Image is not null)
-                _imageRepository.Delete(eventEntity.Image);
-
-            var image = new Image { Url = request.ImageUrl };
-            _imageRepository.Add(image);
-            eventEntity.Image = image;
-        }
-
+        var imageToDelete = eventEntity.Image;
+        var image = new Image { Url = request.ImageUrl };
+        _imageRepository.Add(image);
+        eventEntity.Image = image;
+        
         _eventRepository.Update(eventEntity);
+
+        if (imageToDelete is not null)
+            _imageRepository.Delete(imageToDelete);
 
         await _unitOfWork.SaveChangesAsync(cancellationToken);
 
+        await SendEmailNotifications(eventEntity.Participants, eventEntity);
+
         return Result.Success(_mapper.Map<EventDto>(eventEntity));
+    }
+
+    private async Task SendEmailNotifications(IEnumerable<User> recepients, Event eventEntity)
+    {
+        var emails = recepients.Select(u => u.Email);
+        await _emailSender.SendManyAsync(
+            emails, 
+            $"Event {eventEntity.Name} was updated", 
+            $"Check it out: <a href = '{_linkFactory.GenerateGetEventByIdUri(eventEntity.Id)}'>{eventEntity.Name}</a>"
+        );
     }
 }
