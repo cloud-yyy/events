@@ -10,7 +10,7 @@ using Microsoft.AspNetCore.Http;
 
 namespace Application.Registrations.CreateRegistration;
 
-public class CreateRegistrationCommandHandler(
+internal sealed class CreateRegistrationCommandHandler(
     IUserRepository _userRepository,
     IEventRepository _eventRepository,
     IRegistrationRepository _registrationRepository,

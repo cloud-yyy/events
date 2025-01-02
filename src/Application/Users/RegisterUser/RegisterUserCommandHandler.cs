@@ -3,12 +3,13 @@ using Application.Dtos;
 using Ardalis.Result;
 using AutoMapper;
 using Domain;
+using Domain.Constants;
 using Domain.Entities;
 using Domain.Repositories;
 
 namespace Application.Users.RegisterUser;
 
-public class RegisterUserCommandHandler(
+internal sealed class RegisterUserCommandHandler(
     IUserRepository _userRepository,
     IPasswordHasher _passwordHasher,
     IRoleRepository _roleRepository,
@@ -27,7 +28,7 @@ public class RegisterUserCommandHandler(
             );
         }
 
-        var role = await _roleRepository.GetByNameAsync("User", cancellationToken);
+        var role = await _roleRepository.GetByNameAsync(Roles.User, cancellationToken);
 
         user = new User
         {

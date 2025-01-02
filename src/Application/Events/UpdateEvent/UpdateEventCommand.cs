@@ -10,6 +10,5 @@ public record class UpdateEventCommand(
     string Place, 
     string Category,
     int MaxParticipants,
-    DateOnly Date,
-    string ImageUrl
+    DateOnly Date
 ) : ICommand<EventDto>;

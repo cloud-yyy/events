@@ -1,4 +1,5 @@
 using System.Text;
+using Amazon.S3;
 using Application;
 using Application.Abstractions;
 using Application.Behaviors;
@@ -12,10 +13,12 @@ using Infrastructure.Authorization.Handlers;
 using Infrastructure.Authorization.Requirements;
 using Infrastructure.Email;
 using Infrastructure.Options;
+using Infrastructure.S3;
 using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Persistence;
@@ -46,8 +49,7 @@ builder.Services.AddAutoMapper(typeof(MappingProfile));
 
 builder.Services
     .AddControllers()
-    .AddApplicationPart(typeof(Presentation.Controllers.ApiController).Assembly
-);
+    .AddApplicationPart(typeof(Presentation.AssemblyReference).Assembly);
 
 builder.Services.AddSwaggerGen(options =>
 {
@@ -77,13 +79,13 @@ builder.Services.AddSwaggerGen(options =>
 builder.Services.AddMediatR(configuration => 
 {
     configuration.RegisterServicesFromAssembly(
-        typeof(Application.Events.CreateEvent.CreateEventCommandHandler).Assembly);
+        typeof(Application.AssemblyReference).Assembly);
 });
 
 builder.Services.AddScoped(typeof(IPipelineBehavior<,>), typeof(ValidationPipelineBehavior<,>));
 
 builder.Services.AddValidatorsFromAssembly(
-    typeof(Application.Events.CreateEvent.CreateEventCommandValidator).Assembly,
+    typeof(Application.AssemblyReference).Assembly,
     includeInternalTypes: true
 );
 
@@ -131,12 +133,32 @@ builder.Services
 builder.Services.AddScoped<LinkFactory>();
 builder.Services.AddScoped<IEmailSender, FluentEmailSender>();
 
+builder.Services.AddScoped<IS3Client, AmazonAwsS3Client>();
+
+builder.Services.Configure<AwsOptions>(builder.Configuration.GetSection("AWS"));
+
+builder.Services.AddSingleton<IAmazonS3>(provider =>
+{
+    var options = provider.GetRequiredService<IOptions<AwsOptions>>().Value;
+
+    var config = new AmazonS3Config
+    {
+        ServiceURL = options.ServiceURL,
+        ForcePathStyle = true
+    };
+
+    return new AmazonS3Client(options.AccessKey, options.SecretKey, config);
+});
+
 var app = builder.Build();
 
 using (var scope = app.Services.CreateScope())
 using (var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>())
 {
     context.Database.EnsureCreated();
+
+    var amazonS3 = scope.ServiceProvider.GetRequiredService<IS3Client>();
+    await amazonS3.EnsureBucketExistsAsync(builder.Configuration["AWS:BucketName"]!);
 }
 
 app.UseMiddleware<ExceptionHandlingMiddleware>();

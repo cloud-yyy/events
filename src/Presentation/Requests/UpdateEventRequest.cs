@@ -7,6 +7,5 @@ public record UpdateEventRequest(
     string Place, 
     string Category,
     int MaxParticipants,
-    DateOnly Date,
-    string ImageUrl
+    DateOnly Date
 );

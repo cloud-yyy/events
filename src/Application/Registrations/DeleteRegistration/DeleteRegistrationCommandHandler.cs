@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Http;
 
 namespace Application.Registrations.DeleteRegistration;
 
-public class DeleteRegistrationCommandHandler(
+internal sealed class DeleteRegistrationCommandHandler(
     IRegistrationRepository _registrationRepository,
     IUnitOfWork _unitOfWork,
     IAuthorizationService _authorizationService,

@@ -1,3 +1,4 @@
+using Domain.Constants;
 using Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
@@ -15,8 +16,8 @@ public class RoleConfiguration : IEntityTypeConfiguration<Role>
 
         builder.HasData
         (
-            new Role { Name = "Admin" },
-            new Role { Name = "User" }
+            new Role { Name = Roles.Admin },
+            new Role { Name = Roles.User }
         );
     }
 }

@@ -5,7 +5,7 @@ using Domain.Repositories;
 
 namespace Application.Users.LoginUser;
 
-public class LoginUserCommandHandler(
+internal sealed class LoginUserCommandHandler(
     IUserRepository _userRepository,
     IJwtTokenProvider _jwtTokenProvider,
     IRefreshTokenProvider _refreshTokenProvider

@@ -6,7 +6,7 @@ using Domain.Repositories;
 
 namespace Application.Events.GetEventById;
 
-public class GetEventByIdQueryHandler(
+internal sealed class GetEventByIdQueryHandler(
     IEventRepository _eventResository,
     IMapper _mapper
 ) : IQueryHandler<GetEventByIdQuery, EventDto>

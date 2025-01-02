@@ -8,9 +8,8 @@ using Domain.Repositories;
 
 namespace Application.Events.CreateEvent;
 
-public class CreateEventCommandHandler(
+internal sealed class CreateEventCommandHandler(
     IEventRepository _eventRepository,
-    IImageRepository _imageRepository,
     IUnitOfWork _unitOfWork,
     IMapper _mapper
 ) : ICommandHandler<CreateEventCommand, EventDto>
@@ -25,11 +24,7 @@ public class CreateEventCommandHandler(
             );
         }
 
-        // TODO: Add real image processing
-        var image = new Image { Url = request.ImageUrl };
-        _imageRepository.Add(image);
-
-        var @event = new Event
+        var eventEntity = new Event
         {
             Name = request.Name,
             Description = request.Description,
@@ -37,13 +32,12 @@ public class CreateEventCommandHandler(
             Category = request.Category,
             MaxParticipants = request.MaxParticipants,
             Date = request.Date,
-            Image = image
         };
 
-        _eventRepository.Add(@event);
+        _eventRepository.Add(eventEntity);
 
         await _unitOfWork.SaveChangesAsync(cancellationToken);
 
-        return Result.Created(_mapper.Map<EventDto>(@event));
+        return Result.Created(_mapper.Map<EventDto>(eventEntity));
     }
 }

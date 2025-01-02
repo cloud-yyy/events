@@ -8,9 +8,8 @@ using Domain.Repositories;
 
 namespace Application.Events.UpdateEvent;
 
-public class UpdateEventCommandHandler(
+internal sealed class UpdateEventCommandHandler(
     IEventRepository _eventRepository,
-    IImageRepository _imageRepository,
     IUnitOfWork _unitOfWork,
     IMapper _mapper,
     IEmailSender _emailSender,
@@ -30,16 +29,7 @@ public class UpdateEventCommandHandler(
         eventEntity.MaxParticipants = request.MaxParticipants;
         eventEntity.Date = request.Date;
 
-        var imageToDelete = eventEntity.Image;
-        var image = new Image { Url = request.ImageUrl };
-        _imageRepository.Add(image);
-        eventEntity.Image = image;
-        
         _eventRepository.Update(eventEntity);
-
-        if (imageToDelete is not null)
-            _imageRepository.Delete(imageToDelete);
-
         await _unitOfWork.SaveChangesAsync(cancellationToken);
 
         await SendEmailNotifications(eventEntity.Participants, eventEntity);

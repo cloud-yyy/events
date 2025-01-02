@@ -7,7 +7,7 @@ using Domain.Repositories;
 
 namespace Application.Registrations.GetParticipants;
 
-public class GetEventParticipantsQueryHandler(
+internal sealed class GetEventParticipantsQueryHandler(
     IEventRepository _eventRepository,
     IRegistrationRepository _registrationRepository,
     IMapper _mapper

@@ -4,11 +4,10 @@ using Application.Dtos;
 using Ardalis.Result;
 using Domain;
 using Domain.Repositories;
-using Microsoft.Extensions.Options;
 
 namespace Application.Users.RefreshToken;
 
-public class RefreshTokenCommandHandler(
+internal sealed class RefreshTokenCommandHandler(
     IRefreshTokenRepository _refreshTokenRepository,
     IJwtTokenProvider _jwtTokenProvider,
     IJwtTokenValidator _jwtTokenValidator,

@@ -1,15 +1,18 @@
 using Application.Dtos;
 using Application.Events.CreateEvent;
 using Application.Events.DeleteEvent;
+using Application.Events.DeleteEventImage;
 using Application.Events.GetAllEvents;
 using Application.Events.GetEventById;
 using Application.Events.GetEventByName;
 using Application.Events.UpdateEvent;
+using Application.Events.UploadEventImage;
 using Ardalis.Result.AspNetCore;
 using Domain;
 using Infrastructure.Authorization;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Presentation.Requests;
 
@@ -66,8 +69,7 @@ public class EventsController(ISender sender) : ApiController(sender)
             request.Place,
             request.Category,
             request.MaxParticipants,
-            request.Date,
-            request.ImageUrl
+            request.Date
         );
 
         var result = await Sender.Send(command);
@@ -87,9 +89,30 @@ public class EventsController(ISender sender) : ApiController(sender)
             request.Place,
             request.Category,
             request.MaxParticipants,
-            request.Date,
-            request.ImageUrl
+            request.Date
         );
+
+        var result = await Sender.Send(command);
+
+        return this.ToActionResult(result);
+    }
+
+    [HttpPost]
+    [Route("{id:guid}/image")]
+    public async Task<ActionResult<ImageDto>> UploadEventImageAsync([FromRoute] Guid id, IFormFile file)
+    {
+        var command = new UploadEventImageCommand(id, file);
+
+        var result = await Sender.Send(command);
+
+        return this.ToActionResult(result);
+    }
+
+    [HttpDelete]
+    [Route("{id:guid}/image")]
+    public async Task<ActionResult> DeleteEventImageAsync([FromRoute] Guid id)
+    {
+        var command = new DeleteEventImageCommand(id);
 
         var result = await Sender.Send(command);
 

@@ -6,12 +6,13 @@ using Domain.Repositories;
 
 namespace Application.Events.DeleteEvent;
 
-public class DeleteEventCommandHandler(
+internal sealed class DeleteEventCommandHandler(
     IEventRepository _eventRepository,
     IImageRepository _imageRepository,
     IUnitOfWork _unitOfWork,
     IEmailSender _emailSender,
-    LinkFactory _linkFactory
+    LinkFactory _linkFactory,
+    IS3Client _s3Client
 ) : ICommandHandler<DeleteEventCommand>
 {
     public async Task<Result> Handle(DeleteEventCommand request, CancellationToken cancellationToken)
@@ -22,7 +23,11 @@ public class DeleteEventCommandHandler(
             return Result.NotFound($"Event with id {request.Id} not found");
 
         if (eventEntity.Image is not null)
+        {
             _imageRepository.Delete(eventEntity.Image);
+            await _s3Client.DeleteFileAsync
+                (eventEntity.Image.BucketName, eventEntity.Image.ObjectKey, cancellationToken);
+        }
 
         _eventRepository.Delete(eventEntity);
 

@@ -6,6 +6,5 @@ public record class CreateEventRequest(
     string Place,
     string Category,
     int MaxParticipants,
-    DateOnly Date,
-    string ImageUrl
+    DateOnly Date
 );
