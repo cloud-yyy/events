@@ -18,7 +18,6 @@ internal sealed class DeleteEventCommandHandler(
     public async Task<Result> Handle(DeleteEventCommand request, CancellationToken cancellationToken)
     {
         var eventEntity = await _eventRepository.GetByIdAsync(request.Id, cancellationToken);
-
         if (eventEntity is null)
             return Result.NotFound($"Event with id {request.Id} not found");
 

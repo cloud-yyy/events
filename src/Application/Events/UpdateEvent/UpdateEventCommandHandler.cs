@@ -19,8 +19,17 @@ internal sealed class UpdateEventCommandHandler(
     public async Task<Result<EventDto>> Handle(UpdateEventCommand request, CancellationToken cancellationToken)
     {
         var eventEntity = await _eventRepository.GetByIdAsync(request.Id, cancellationToken);
+
         if (eventEntity is null)
             return Result.NotFound($"Event with id {request.Id} not found");
+
+        var existed = await _eventRepository.GetByNameAsync(request.Name, cancellationToken);
+        if (existed is not null)
+        {
+            return Result.Invalid(
+                new ValidationError(nameof(request.Name), $"Event with name {request.Name} already exists")
+            );
+        }
 
         eventEntity.Name = request.Name;
         eventEntity.Description = request.Description;

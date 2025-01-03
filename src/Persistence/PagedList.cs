@@ -35,6 +35,18 @@ public class PagedList<T> : IPagedList<T>
         return new PagedList<T>(items, page, pageSize, totalCount);
     }
 
+    public static PagedList<T> Create
+        (IQueryable<T> query, int page, int pageSize, CancellationToken token = default)
+    {
+        var totalCount = query.Count();
+        var items = query
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
+            .ToList();
+        
+        return new PagedList<T>(items, page, pageSize, totalCount);
+    }
+
     public IPagedList<K> ConvertTo<K>(Expression<Func<T, K>> selector)
     {
         return new PagedList<K>(

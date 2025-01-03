@@ -1,3 +1,7 @@
 namespace Domain.Repositories;
 
-public record EventFilter(DateOnly? Date, string? Place, string? Category);
+public record EventFilter(
+    DateOnly? Date = null, 
+    string? Place = null, 
+    string? Category = null
+);
