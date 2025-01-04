@@ -25,10 +25,6 @@ public class EventConfiguration : IEntityTypeConfiguration<Event>
             .HasMaxLength(100)
             .IsRequired();
 
-        builder.Property(e => e.Category)
-            .HasMaxLength(40)
-            .IsRequired();
-
         builder.Property(e => e.MaxParticipants)
             .IsRequired()
             .HasAnnotation("CheckConstraint", "max_participants > 0");

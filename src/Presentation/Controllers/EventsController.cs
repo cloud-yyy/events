@@ -64,8 +64,8 @@ public class EventsController(ISender sender) : ApiController(sender)
             request.Name,
             request.Description,
             request.Place,
-            request.Category,
             request.MaxParticipants,
+            request.Category,
             request.Date
         );
 
@@ -84,9 +84,9 @@ public class EventsController(ISender sender) : ApiController(sender)
             request.Name,
             request.Description,
             request.Place,
-            request.Category,
             request.MaxParticipants,
-            request.Date
+            request.Date,
+            request.Category
         );
 
         var result = await Sender.Send(command);

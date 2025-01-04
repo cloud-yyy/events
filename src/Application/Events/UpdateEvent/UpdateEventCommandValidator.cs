@@ -12,7 +12,7 @@ public class UpdateEventCommandValidator : AbstractValidator<UpdateEventCommand>
 
         RuleFor(e => e.Place).NotEmpty().MaximumLength(100);
 
-        RuleFor(e => e.Category).NotEmpty().MaximumLength(40);
+        RuleFor(e => e.Category).NotNull();
 
         RuleFor(e => e.MaxParticipants).GreaterThan(0);
     }

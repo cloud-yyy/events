@@ -12,7 +12,7 @@ public class RegistrationRepository(
     public async Task<IPagedList<Registration>> GetParticipantsAsync
         (Guid eventId, int pageNumber, int pageSize, CancellationToken token = default)
     {
-        var query = _context.Set<Registration>()
+        var query = _context.Registrations
             .Where(e => e.EventId == eventId)
             .Include(e => e.User);
 
@@ -22,7 +22,7 @@ public class RegistrationRepository(
     public async Task<Registration?> GetParticipantByIdAsync
         (Guid eventId, Guid userId, CancellationToken token = default)
     {
-        return await _context.Set<Registration>()
+        return await _context.Registrations
             .Include(e => e.User)
             .SingleOrDefaultAsync(r => r.EventId == eventId && r.UserId == userId, token);
     }
@@ -30,7 +30,7 @@ public class RegistrationRepository(
     public async Task<Registration?> GetAsync
         (Guid UserId, Guid EventId, CancellationToken cancellationToken = default)
     {
-        return await _context.Set<Registration>()
+        return await _context.Registrations
             .Where(r => r.UserId == UserId && r.EventId == EventId)
             .Include(r => r.Event)
             .Include(r => r.User)
@@ -39,12 +39,12 @@ public class RegistrationRepository(
 
     public Registration Add(Registration registration)
     {
-        _context.Add(registration);
+        _context.Registrations.Add(registration);
         return registration;
     }
 
     public void Delete(Registration registration)
     {
-        _context.Remove(registration);
+        _context.Registrations.Remove(registration);
     }
 }

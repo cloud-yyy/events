@@ -8,7 +8,7 @@ using Domain.Repositories;
 
 namespace Application.Roles.CreateRole;
 
-public class CreateRoleCommandHandler(
+internal sealed class CreateRoleCommandHandler(
     IRoleRepository _roleRepository,
     IMapper _mapper,
     IUnitOfWork _unitOfWork
@@ -29,6 +29,6 @@ public class CreateRoleCommandHandler(
         _roleRepository.Add(role);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
 
-        return Result.Success(_mapper.Map<RoleDto>(role));
+        return Result.Created(_mapper.Map<RoleDto>(role));
     }
 }

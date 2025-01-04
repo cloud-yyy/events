@@ -7,7 +7,7 @@ public record CreateEventCommand(
     string Name,
     string Description,
     string Place,
-    string Category,
     int MaxParticipants,
+    CategoryDto Category,
     DateOnly Date
 ) : ICommand<EventDto>;

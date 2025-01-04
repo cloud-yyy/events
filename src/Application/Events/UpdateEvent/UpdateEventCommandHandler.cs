@@ -11,6 +11,7 @@ namespace Application.Events.UpdateEvent;
 internal sealed class UpdateEventCommandHandler(
     IEventRepository _eventRepository,
     IUnitOfWork _unitOfWork,
+    ICategoryRepository _categoryRepository,
     IMapper _mapper,
     IEmailSender _emailSender,
     LinkFactory _linkFactory
@@ -31,10 +32,18 @@ internal sealed class UpdateEventCommandHandler(
             );
         }
 
+        var category = await _categoryRepository.GetByIdAsync(request.Category.Id, cancellationToken);
+        if (category is null)
+        {
+            return Result.Invalid(
+                new ValidationError(nameof(request.Category), $"Category with name {request.Category} not found")
+            );
+        }
+
         eventEntity.Name = request.Name;
         eventEntity.Description = request.Description;
         eventEntity.Place = request.Place;
-        eventEntity.Category = request.Category;
+        eventEntity.Category = category;
         eventEntity.MaxParticipants = request.MaxParticipants;
         eventEntity.Date = request.Date;
 

@@ -14,13 +14,14 @@ public class EventRepository(
     {
         var query = _context.Events
             .Include(e => e.Image)
+            .Include(e => e.Category)
             .AsQueryable();
 
         if (filter?.Date is not null)
             query = query.Where(e => e.Date == filter.Date);
 
         if (filter?.Category is not null)
-            query = query.Where(e => e.Category.ToLower().Contains(filter.Category.ToLower()));
+            query = query.Where(e => e.Category!.Name.Contains(filter.Category.ToLower()));
     
         if (filter?.Place is not null)
             query = query.Where(e => e.Place.ToLower().Contains(filter.Place.ToLower()));
@@ -39,6 +40,7 @@ public class EventRepository(
     {
         return await _context.Events
             .Include(e => e.Image)
+            .Include(e => e.Category)
             .Include(e => e.Participants)
             .SingleOrDefaultAsync(e => e.Id == id, token);
     }
@@ -47,6 +49,7 @@ public class EventRepository(
     {
         return await _context.Events
             .Include(e => e.Image)
+            .Include(e => e.Category)
             .SingleOrDefaultAsync(e => e.Name == name, token);
     }
 

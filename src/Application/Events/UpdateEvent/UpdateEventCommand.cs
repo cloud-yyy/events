@@ -8,7 +8,7 @@ public record class UpdateEventCommand(
     string Name, 
     string Description,
     string Place, 
-    string Category,
     int MaxParticipants,
-    DateOnly Date
+    DateOnly Date,
+    CategoryDto Category
 ) : ICommand<EventDto>;

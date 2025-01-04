@@ -5,9 +5,9 @@ public record EventDto(
     string Name,
     string Description,
     string Place,
-    string Category,
     int CurrentParticipants,
     int MaxParticipants,
+    CategoryDto Category,
     DateOnly Date,
     ImageDto Image
 );

@@ -12,6 +12,7 @@ public class MappingProfile : Profile
         CreateMap<User, UserDto>();
         CreateMap<Role, RoleDto>();
         CreateMap<Registration, ParticipantDto>();
+        CreateMap<Category, CategoryDto>();
 
         CreateMap<Image, ImageDto>()
         .ForMember(

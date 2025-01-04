@@ -10,7 +10,7 @@ using Microsoft.AspNetCore.Http;
 
 namespace Application.Users.UpdateUser;
 
-public class UpdateUserCommandHandler(
+internal sealed class UpdateUserCommandHandler(
     IUserRepository _userRepository,
     IRoleRepository _roleRepository,
     IUnitOfWork _unitOfWork,

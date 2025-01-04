@@ -6,7 +6,7 @@ using Domain.Repositories;
 
 namespace Application.Roles.GetAllRoles;
 
-public class GetAllRolesQueryHandler(
+internal sealed class GetAllRolesQueryHandler(
     IRoleRepository _roleRepository,
     IMapper _mapper
 ) : IQueryHandler<GetAllRolesQuery, IEnumerable<RoleDto>>

@@ -5,7 +5,7 @@ using Domain.Repositories;
 
 namespace Application.Roles.DeleteRole;
 
-public class DeleteRoleCommandHandler(
+internal sealed class DeleteRoleCommandHandler(
     IRoleRepository _roleRepository,
     IUnitOfWork _unitOfWork
 ) : ICommandHandler<DeleteRoleCommand>
@@ -18,6 +18,6 @@ public class DeleteRoleCommandHandler(
 
         _roleRepository.Delete(role);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
-        return Result.Success();
+        return Result.NoContent();
     }
 }

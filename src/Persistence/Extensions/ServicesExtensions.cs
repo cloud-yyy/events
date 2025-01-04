@@ -28,5 +28,6 @@ public static class ServicesExtensions
         services.AddScoped<IRoleRepository, RoleRepository>();
         services.AddScoped<IRegistrationRepository, RegistrationRepository>();
         services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
+        services.AddScoped<ICategoryRepository, CategoryRepository>();
     }
 }
