@@ -33,6 +33,10 @@ public class EventConfiguration : IEntityTypeConfiguration<Event>
             .IsRequired()
             .HasAnnotation("CheckConstraint", "max_participants > 0");
 
+        builder.Property(e => e.CurrentParticipants)
+            .IsRequired()
+            .HasAnnotation("CheckConstraint", "current_participants >= 0");
+
         builder
             .HasOne(e => e.Image)
             .WithOne();

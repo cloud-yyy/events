@@ -35,7 +35,7 @@ internal sealed class RefreshTokenCommandHandler(
             refreshToken.Token.Equals(request.RefreshToken))
         {
             var newAccessToken = _jwtTokenProvider.GenerateToken(refreshToken.User!);
-            var newResfreshToken = await _refreshTokenProvider.GenerateJwtToken(refreshToken.User!);
+            var newResfreshToken = await _refreshTokenProvider.GenerateToken(refreshToken.User!);
 
             await _unitOfWork.SaveChangesAsync(cancellationToken);
             return new TokenDto(newAccessToken, newResfreshToken);

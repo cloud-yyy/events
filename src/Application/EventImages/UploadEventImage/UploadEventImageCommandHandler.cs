@@ -1,17 +1,20 @@
 using Application.Abstractions;
 using Application.Dtos;
+using Application.Options;
 using Ardalis.Result;
 using Domain;
 using Domain.Entities;
 using Domain.Repositories;
+using Microsoft.Extensions.Options;
 
-namespace Application.Events.UploadEventImage;
+namespace Application.EventImages.UploadEventImage;
 
 internal sealed class UploadEventImageCommandHandler(
     IS3Client _s3Client,
     IImageRepository _imageRepository,
     IEventRepository _eventRepository,
-    IUnitOfWork _unitOfWork
+    IUnitOfWork _unitOfWork,
+    IOptions<AwsOptions> _options
 ) : ICommandHandler<UploadEventImageCommand, ImageDto>
 {
     public async Task<Result<ImageDto>> Handle
@@ -29,7 +32,7 @@ internal sealed class UploadEventImageCommandHandler(
         var objectKey = $"events/{id}{extension}";
 
         var publicUrl = await _s3Client.UploadFileAsync(
-            "event-images",
+            _options.Value.BucketName,
             objectKey,
             stream,
             contentType,
@@ -39,7 +42,7 @@ internal sealed class UploadEventImageCommandHandler(
         var imageEntity = new Image
         {
             ObjectKey = objectKey,
-            BucketName = "event-images",
+            BucketName = _options.Value.BucketName,
             ContentType = contentType
         };
 

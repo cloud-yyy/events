@@ -4,5 +4,5 @@ namespace Application.Abstractions;
 
 public interface IRefreshTokenProvider
 {
-    public Task<string> GenerateJwtToken(User user);
+    public Task<string> GenerateToken(User user);
 }

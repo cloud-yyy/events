@@ -7,6 +7,7 @@ public class Event
     public string Description { get; set; } = string.Empty;
     public string Place { get; set; } = string.Empty;
     public string Category { get; set; } = string.Empty;
+    public int CurrentParticipants { get; set; }
     public int MaxParticipants { get; set; }
     public DateOnly Date { get; set; }
 

@@ -50,7 +50,7 @@ namespace Persistence.Tests.Repositories
             entity.Image.Should().NotBeNull();
             entity.Participants.Should().NotBeEmpty();
         }
-   
+
         [Fact]
         public async Task GetByIdAsync_Should_IncludeImage_WhenEventExistsAndHasImage()
         {
@@ -68,26 +68,6 @@ namespace Persistence.Tests.Repositories
             entity.Should().NotBeNull();
             entity!.Image.Should().NotBeNull();
             entity!.Image!.Id.Should().Be(_entity.Image!.Id);
-        }
-
-
-        [Fact]
-        public async Task GetByIdAsync_Should_IncludeParicipants_WhenEventExistsAndHasParticipantsAsync()
-        {
-            // Arrange
-            using var context = new ApplicationDbContext(CreateDatabase());
-            
-            context.Events.Add(_entity);
-            await context.SaveChangesAsync();
-            
-            var repository = new EventRepository(context);
-            // Act
-            var entity = await repository.GetByIdAsync(_entity.Id);
-        
-            // Assert
-            entity.Should().NotBeNull();
-            entity!.Participants.Should().NotBeNull();
-            entity!.Participants!.Count.Should().Be(1);
         }
 
         [Fact]

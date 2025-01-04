@@ -27,4 +27,11 @@ public class UserRepository(
             .Include(u => u.Role)
             .SingleOrDefaultAsync(u => u.Email == email, token);
     }
+
+    public User Update(User user)
+    {
+        _context.Users.Attach(user);
+        _context.Entry(user).State = EntityState.Modified;
+        return user;
+    }
 }

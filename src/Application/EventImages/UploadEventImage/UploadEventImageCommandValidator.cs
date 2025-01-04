@@ -1,6 +1,6 @@
 using FluentValidation;
 
-namespace Application.Events.UploadEventImage;
+namespace Application.EventImages.UploadEventImage;
 
 public class UploadEventImageCommandValidator : AbstractValidator<UploadEventImageCommand>
 {

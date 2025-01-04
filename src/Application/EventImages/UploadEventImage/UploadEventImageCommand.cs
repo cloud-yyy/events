@@ -2,7 +2,7 @@ using Application.Abstractions;
 using Application.Dtos;
 using Microsoft.AspNetCore.Http;
 
-namespace Application.Events.UploadEventImage;
+namespace Application.EventImages.UploadEventImage;
 
 public record UploadEventImageCommand(
     Guid EventId,

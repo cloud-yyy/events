@@ -6,6 +6,12 @@ public class RegisterUserCommandValidator : AbstractValidator<RegisterUserComman
 {
     public RegisterUserCommandValidator()
     {
-        
+        RuleFor(e => e.Email).NotEmpty().EmailAddress();
+
+        RuleFor(e => e.Password).NotEmpty().MinimumLength(4).MaximumLength(50);
+
+        RuleFor(e => e.FirstName).NotEmpty().MaximumLength(50);
+
+        RuleFor(e => e.LastName).NotEmpty().MaximumLength(50);
     }
 }

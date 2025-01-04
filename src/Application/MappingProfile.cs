@@ -4,7 +4,7 @@ using Domain.Entities;
 
 namespace Application;
 
-public class MappingProfile: Profile
+public class MappingProfile : Profile
 {
     public MappingProfile()
     {
@@ -13,9 +13,10 @@ public class MappingProfile: Profile
         CreateMap<Role, RoleDto>();
         CreateMap<Registration, ParticipantDto>();
 
-        CreateMap<Image, ImageDto>().ForMember(
-            i => i.PublicUrl, 
-            opts => opts.MapFrom(i => i.ObjectKey)
+        CreateMap<Image, ImageDto>()
+        .ForMember(
+            dest => dest.PublicUrl,
+            opt => opt.MapFrom<ImageUrlValueResolver>()
         );
     }
 }

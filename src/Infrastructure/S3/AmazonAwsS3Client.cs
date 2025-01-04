@@ -2,7 +2,7 @@ using Amazon.S3;
 using Amazon.S3.Model;
 using Amazon.S3.Util;
 using Application.Abstractions;
-using Infrastructure.Options;
+using Application.Options;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
@@ -128,6 +128,6 @@ public class AmazonAwsS3Client(
 
     public string GetPublicFileUrl(string bucketName, string objectKey)
     {
-        return $"{_options.Value.ServiceURL}/{_options.Value.BucketName}/{objectKey}";
+        return $"{_options.Value.PublicURL}/{_options.Value.BucketName}/{objectKey}";
     }
 }

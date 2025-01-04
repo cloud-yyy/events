@@ -13,7 +13,6 @@ public class EventRepository(
         (int pageNumber, int pageSize, EventFilter? filter = null, CancellationToken token = default)
     {
         var query = _context.Events
-            .Include(e => e.Participants)
             .Include(e => e.Image)
             .AsQueryable();
 
@@ -32,15 +31,21 @@ public class EventRepository(
     public async Task<Event?> GetByIdAsync(Guid id, CancellationToken token = default)
     {
         return await _context.Events
-            .Include(e => e.Participants)
             .Include(e => e.Image)
+            .SingleOrDefaultAsync(e => e.Id == id, token);
+    }
+
+    public async Task<Event?> GetByIdWithParticipantsAsync(Guid id, CancellationToken token = default)
+    {
+        return await _context.Events
+            .Include(e => e.Image)
+            .Include(e => e.Participants)
             .SingleOrDefaultAsync(e => e.Id == id, token);
     }
 
     public async Task<Event?> GetByNameAsync(string name, CancellationToken token = default)
     {
         return await _context.Events
-            .Include(e => e.Participants)
             .Include(e => e.Image)
             .SingleOrDefaultAsync(e => e.Name == name, token);
     }

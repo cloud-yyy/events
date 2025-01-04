@@ -1,0 +1,55 @@
+services:
+  db:
+    image: postgres:alpine
+    environment:
+      POSTGRES_PASSWORD: root
+    ports:
+      - 5432:5432
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+  
+  minio:
+    image: minio/minio:latest
+    ports:
+      - 9000:9000
+      - 9090:9090
+    environment:
+      MINIO_ROOT_USER: admin
+      MINIO_ROOT_PASSWORD: password
+    volumes:
+      - miniodata:/data
+    command: server /data --address ":9000" --console-address ":9090"
+  
+  smtp-server:
+    image: changemakerstudiosus/papercut-smtp:latest
+    ports:
+      - 25:25
+      - 8080:80
+  
+  web:
+    image: web
+    build:
+      context: .
+      dockerfile: src/Web/Dockerfile
+    ports:
+      - 5075:5075
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
+    env_file:
+      - src/Web/.env
+    depends_on:
+      db:
+        condition: service_healthy
+      minio:
+        condition: service_started
+      smtp-server:
+        condition: service_started
+
+volumes:
+  pgdata:
+  miniodata:

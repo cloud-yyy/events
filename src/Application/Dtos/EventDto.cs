@@ -6,6 +6,7 @@ public record EventDto(
     string Description,
     string Place,
     string Category,
+    int CurrentParticipants,
     int MaxParticipants,
     DateOnly Date,
     ImageDto Image

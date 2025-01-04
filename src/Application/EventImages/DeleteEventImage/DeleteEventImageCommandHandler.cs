@@ -3,7 +3,7 @@ using Ardalis.Result;
 using Domain;
 using Domain.Repositories;
 
-namespace Application.Events.DeleteEventImage;
+namespace Application.EventImages.DeleteEventImage;
 
 internal sealed class DeleteEventImageCommandHandler(
     IEventRepository _eventRepository,

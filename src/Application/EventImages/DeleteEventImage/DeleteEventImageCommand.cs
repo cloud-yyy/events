@@ -1,6 +1,6 @@
 using Application.Abstractions;
 
-namespace Application.Events.DeleteEventImage;
+namespace Application.EventImages.DeleteEventImage;
 
 public record DeleteEventImageCommand(
     Guid EventId

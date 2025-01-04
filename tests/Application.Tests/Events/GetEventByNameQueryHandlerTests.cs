@@ -23,7 +23,7 @@ public class GetEventByNameQueryHandlerTests
 
         _entity = new(){ Id = Guid.NewGuid(), Name = "Name"};
         _dto = new(
-            _entity.Id, _entity.Name, "", "", "", 0, DateOnly.FromDateTime(DateTime.UtcNow), new ImageDto()
+            _entity.Id, _entity.Name, "", "", "", 0, 0, DateOnly.FromDateTime(DateTime.UtcNow), new ImageDto()
         );
     }
 

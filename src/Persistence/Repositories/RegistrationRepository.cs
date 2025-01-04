@@ -19,6 +19,14 @@ public class RegistrationRepository(
         return await PagedList<Registration>.CreateAsync(query, pageNumber, pageSize, token);
     }
 
+    public async Task<Registration?> GetParticipantByIdAsync
+        (Guid eventId, Guid userId, CancellationToken token = default)
+    {
+        return await _context.Set<Registration>()
+            .Include(e => e.User)
+            .SingleOrDefaultAsync(r => r.EventId == eventId && r.UserId == userId, token);
+    }
+
     public async Task<Registration?> GetAsync
         (Guid UserId, Guid EventId, CancellationToken cancellationToken = default)
     {

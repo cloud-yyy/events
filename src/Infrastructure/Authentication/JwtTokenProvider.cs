@@ -3,7 +3,7 @@ using System.Security.Claims;
 using System.Text;
 using Application.Abstractions;
 using Domain.Entities;
-using Infrastructure.Options;
+using Application.Options;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 
@@ -20,13 +20,12 @@ public sealed class JwtTokenProvider(
         var claims = new Claim[]
         {
             new(ClaimTypes.NameIdentifier, user.Id.ToString()),
-            new(ClaimTypes.Email, user.Email),
-            new (ClaimTypes.Role, user.Role?.Name ?? string.Empty)
+            new(ClaimTypes.Role, user.Role?.Name ?? string.Empty)
         };
 
         var credentials = new SigningCredentials(
             new SymmetricSecurityKey(
-                Encoding.UTF8.GetBytes(Environment.GetEnvironmentVariable("SECRET_KEY")!)
+                Encoding.UTF8.GetBytes(_jwtOptions.SecretKey)
             ),
             SecurityAlgorithms.HmacSha256
         );

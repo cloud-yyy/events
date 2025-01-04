@@ -163,6 +163,7 @@ public class GetAllEventsQueryHandlerTests
             entity.Description,
             entity.Place,
             entity.Category,
+            entity.CurrentParticipants,
             entity.MaxParticipants,
             entity.Date,
             new ImageDto(entity.Image!.Id, entity.Image.ObjectKey)

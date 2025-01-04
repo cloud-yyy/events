@@ -1,7 +1,6 @@
 namespace Presentation.Requests;
 
 public record UpdateEventRequest(
-    Guid Id,
     string Name, 
     string Description,
     string Place, 

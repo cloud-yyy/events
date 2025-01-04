@@ -196,6 +196,7 @@ public class UpdateEventCommandHandlerTests
             entity.Description,
             entity.Place,
             entity.Category,
+            entity.CurrentParticipants,
             entity.MaxParticipants,
             entity.Date,
             new ImageDto(Guid.NewGuid(), "")

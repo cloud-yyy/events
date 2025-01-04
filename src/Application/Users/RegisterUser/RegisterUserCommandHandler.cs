@@ -28,7 +28,7 @@ internal sealed class RegisterUserCommandHandler(
             );
         }
 
-        var role = await _roleRepository.GetByNameAsync(Roles.User, cancellationToken);
+        var role = await _roleRepository.GetByNameAsync(RoleNames.User, cancellationToken);
 
         user = new User
         {

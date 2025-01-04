@@ -1,7 +1,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 
-namespace Infrastructure.Options;
+namespace Application.Options;
 
 public class RefreshTokenOptionsSetup(
     IConfiguration _configuration
@@ -13,7 +13,8 @@ public class RefreshTokenOptionsSetup(
     {
         _configuration.GetSection(SectionName).Bind(options);
 
-        var key = $"{SectionName}:LifetimeInDays";
-        options.Lifetime = TimeSpan.FromDays(int.Parse(_configuration[key]!));
+        options.Lifetime = TimeSpan.FromDays(
+            int.Parse(_configuration[$"{SectionName}:LifetimeInDays"]!)
+        );
     }
 }

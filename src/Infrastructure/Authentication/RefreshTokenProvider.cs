@@ -3,7 +3,7 @@ using Application.Abstractions;
 using Domain;
 using Domain.Entities;
 using Domain.Repositories;
-using Infrastructure.Options;
+using Application.Options;
 using Microsoft.Extensions.Options;
 
 namespace Infrastructure.Authentication;
@@ -14,7 +14,7 @@ public class RefreshTokenProvider(
     IOptions<RefreshTokenOptions> _options
 ) : IRefreshTokenProvider
 {
-    public async Task<string> GenerateJwtToken(User user)
+    public async Task<string> GenerateToken(User user)
     {
         await _refreshTokenRepository
             .DeleteByConditionAsync(token => token.UserId == user.Id);
@@ -28,7 +28,6 @@ public class RefreshTokenProvider(
         };
 
         _refreshTokenRepository.Add(token);
-
         await _unitOfWork.SaveChangesAsync();
 
         return token.Token;

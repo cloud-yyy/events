@@ -35,6 +35,11 @@ namespace Persistence.Migrations
                         .HasColumnType("character varying(40)")
                         .HasColumnName("category");
 
+                    b.Property<int>("CurrentParticipants")
+                        .HasColumnType("integer")
+                        .HasColumnName("current_participants")
+                        .HasAnnotation("CheckConstraint", "current_participants >= 0");
+
                     b.Property<DateOnly>("Date")
                         .HasColumnType("date")
                         .HasColumnName("date");
@@ -184,12 +189,12 @@ namespace Persistence.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("7fcb36eb-efdb-4064-a652-f8a2726fc11a"),
+                            Id = new Guid("9bc50b7f-a910-49b5-b1d2-ab21146ce6b8"),
                             Name = "Admin"
                         },
                         new
                         {
-                            Id = new Guid("458fa0cc-d6e0-4149-8b7a-bc25d38ea444"),
+                            Id = new Guid("5854fb21-c8bf-4f21-a550-dcc2bf1b5108"),
                             Name = "User"
                         });
                 });
