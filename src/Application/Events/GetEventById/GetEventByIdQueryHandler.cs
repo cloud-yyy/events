@@ -1,5 +1,6 @@
 using Application.Abstractions;
 using Application.Dtos;
+using Application.ErrorResults;
 using Ardalis.Result;
 using AutoMapper;
 using Domain.Repositories;
@@ -16,7 +17,7 @@ internal sealed class GetEventByIdQueryHandler(
         var eventEntity = await _eventResository.GetByIdAsync(request.Id, cancellationToken);
 
         if (eventEntity is null)
-            return Result.NotFound($"Event with id {request.Id} not found");
+            return EventResults.NotFound.ById(request.Id);
 
         return Result.Success(_mapper.Map<EventDto>(eventEntity));
     }

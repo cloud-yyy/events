@@ -1,5 +1,6 @@
 using Application.Abstractions;
 using Application.Dtos;
+using Application.ErrorResults;
 using Ardalis.Result;
 using AutoMapper;
 using Domain;
@@ -19,9 +20,7 @@ internal sealed class CreateCategoryCommandHandler(
     {
         var existed = await _categoryRepository.GetByNameAsync(request.Name, cancellationToken);
         if (existed is not null)
-            return Result.Invalid(new ValidationError(
-                nameof(request.Name), $"Category with name {request.Name} already exists")
-            );
+            return CategoryResults.Invalid.NameNotUnique(request.Name);
 
         var category = new Category { Name = request.Name };
 

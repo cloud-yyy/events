@@ -1,6 +1,7 @@
 using System.Security.Claims;
 using Application.Abstractions;
 using Application.Dtos;
+using Application.ErrorResults;
 using Ardalis.Result;
 using AutoMapper;
 using Domain;
@@ -28,28 +29,20 @@ internal sealed class CreateRegistrationCommandHandler(
 
         var user = await _userRepository.GetByIdAsync(userId, cancellationToken);
         if (user is null)
-            return Result.NotFound($"User with id {userId} not found");
+            return UserResults.NotFound.ById(userId);
 
         var eventEntity = await _eventRepository.GetByIdAsync(request.EventId, cancellationToken);
         if (eventEntity is null)
-            return Result.NotFound($"Event with id {request.EventId} not found");
+            return EventResults.NotFound.ById(request.EventId);
 
         var registration = await _registrationRepository.GetAsync
             (userId, request.EventId, cancellationToken);
 
         if (registration is not null)
-        {
-            return Result.Invalid(
-                new ValidationError($"User {userId} is already registered to event {request.EventId}")
-            );
-        }
+            return RegistrationResults.Invalid.AlreadyRegistered(userId, request.EventId);
 
         if (eventEntity.CurrentParticipants >= eventEntity.MaxParticipants)
-        {
-            return Result.Invalid(
-                new ValidationError($"Event {request.EventId} is full")
-            );
-        }
+            return EventResults.Invalid.HasNoPlaces(request.EventId);
 
         registration = new Registration
         {

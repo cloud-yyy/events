@@ -1,5 +1,6 @@
 using System.Security.Claims;
 using Application.Abstractions;
+using Application.ErrorResults;
 using Ardalis.Result;
 using Domain;
 using Domain.Repositories;
@@ -23,11 +24,7 @@ internal sealed class DeleteRegistrationCommandHandler(
             .GetAsync(userId, request.EventId, cancellationToken);
 
         if (registration is null)
-        {
-            return Result.NotFound(
-                $"Registration for user {userId} to event {request.EventId} not found"
-            );
-        }
+            return RegistrationResults.NotFound.ByUserIdAndEventId(userId, request.EventId);
 
         _registrationRepository.Delete(registration);
         registration.Event!.CurrentParticipants -= 1;

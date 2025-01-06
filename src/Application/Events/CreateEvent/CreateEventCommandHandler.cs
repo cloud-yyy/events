@@ -1,5 +1,6 @@
 using Application.Abstractions;
 using Application.Dtos;
+using Application.ErrorResults;
 using Ardalis.Result;
 using AutoMapper;
 using Domain;
@@ -19,19 +20,11 @@ internal sealed class CreateEventCommandHandler(
         (CreateEventCommand request, CancellationToken cancellationToken)
     {
         if (await _eventRepository.GetByNameAsync(request.Name, cancellationToken) is not null)
-        {
-            return Result.Invalid(
-                new ValidationError(nameof(request.Name), $"Event with name {request.Name} already exists")
-            );
-        }
+            return EventResults.Invalid.NameNotUnique(request.Name);
 
         var category = await _categoryRepository.GetByIdAsync(request.Category.Id, cancellationToken);
         if (category is null)
-        {
-            return Result.Invalid(
-                new ValidationError(nameof(request.Category.Name), $"Category with name {request.Category.Name} not found")
-            );
-        }
+            return CategoryResults.NotFound.ById(request.Category.Id);
 
         var eventEntity = new Event
         {

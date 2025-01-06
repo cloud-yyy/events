@@ -1,5 +1,6 @@
 using Application.Abstractions;
 using Application.Dtos;
+using Application.ErrorResults;
 using Application.Options;
 using Ardalis.Result;
 using Domain;
@@ -22,7 +23,7 @@ internal sealed class UploadEventImageCommandHandler(
     {
         var eventEntity = await _eventRepository.GetByIdAsync(request.EventId, cancellationToken);
         if (eventEntity is null)
-            return Result.NotFound($"Event with id {request.EventId} not found");
+            return EventResults.NotFound.ById(request.EventId);
 
         using var stream = request.File.OpenReadStream();
         var contentType = request.File.ContentType;

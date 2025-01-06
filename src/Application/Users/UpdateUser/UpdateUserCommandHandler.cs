@@ -1,6 +1,7 @@
 using System.Security.Claims;
 using Application.Abstractions;
 using Application.Dtos;
+using Application.ErrorResults;
 using Ardalis.Result;
 using AutoMapper;
 using Domain;
@@ -28,24 +29,18 @@ internal sealed class UpdateUserCommandHandler(
             .FirstOrDefault(c => c.Type == ClaimTypes.Role)?.Value;
 
         if (userId != request.Id || userRole != RoleNames.Admin)
-            return Result.Invalid(new ValidationError(
-                nameof(request.Id), $"You are not allowed to update user with id {request.Id}")
-            );
+            return UserResults.Invalid.CannotUpdate(request.Id);
 
         var user = await _userRepository.GetByIdAsync(userId, cancellationToken);
         if (user is null)
-            return Result.NotFound($"User with id {userId} not found");
+            return UserResults.NotFound.ById(userId);
 
         var role = await _roleRepository.GetByIdAsync(request.RoleId, cancellationToken);
         if (role is null)
-            return Result.Invalid(new ValidationError(
-                nameof(request.RoleId), $"Specified role with id {request.RoleId} not found")
-            );
+            return RoleResults.NotFound.ById(request.RoleId);
 
         if (role.Name == RoleNames.Admin && userRole != RoleNames.Admin)
-            return Result.Invalid(new ValidationError(
-                nameof(request.RoleId), $"You are not allowed to grant {RoleNames.Admin} role")
-            );
+            return UserResults.Invalid.CannotGrantRole(RoleNames.Admin);
 
         user.FirstName = request.FirstName;
         user.LastName = request.LastName;
