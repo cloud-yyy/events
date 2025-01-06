@@ -1,5 +1,6 @@
 using Application.Abstractions;
 using Application.Dtos;
+using Application.ErrorResults;
 using Application.Events.UpdateEvent;
 using Ardalis.Result;
 using AutoMapper;
@@ -15,6 +16,7 @@ namespace Application.Tests.Events;
 public class UpdateEventCommandHandlerTests
 {
     private readonly Mock<IEventRepository> _eventRepositoryMock;
+    private readonly Mock<ICategoryRepository> _categoryRepositoryMock;
     private readonly Mock<IMapper> _mapperMock;
     private readonly Mock<IUnitOfWork> _unitOfWorkMock;
     private readonly Mock<IEmailSender> _emailSenderMock;
@@ -28,6 +30,7 @@ public class UpdateEventCommandHandlerTests
     public UpdateEventCommandHandlerTests()
     {
         _eventRepositoryMock = new();
+        _categoryRepositoryMock = new();
         _unitOfWorkMock = new();
         _emailSenderMock = new();
         
@@ -35,17 +38,22 @@ public class UpdateEventCommandHandlerTests
         _linkGeneratorMock = new();
         _linkFactory = new(_httpContextAccessorMock.Object, _linkGeneratorMock.Object);
         
+        _entity = new Event
+        { 
+            Id = Guid.NewGuid(), 
+            Category = new Category() { Id = Guid.NewGuid(), Name = "Category"}, 
+            Participants = [new(), new(), new()] 
+        };
+
         _command = new UpdateEventCommand(
-            Guid.NewGuid(), 
+            _entity.Id,
             "Name", 
             "Description", 
-            "Place", 
-            "Category", 
+            "Place",
             1, 
-            DateOnly.FromDateTime(DateTime.UtcNow)
+            DateOnly.FromDateTime(DateTime.UtcNow),
+            new CategoryDto(_entity.Category.Id, _entity.Category.Name)
         );
-
-        _entity = new Event { Id = _command.Id, Participants = [new(), new(), new()] };
 
         _mapperMock = new();
         _mapperMock
@@ -55,6 +63,10 @@ public class UpdateEventCommandHandlerTests
         _httpContextAccessorMock
             .Setup(x => x.HttpContext)
             .Returns(new DefaultHttpContext());
+
+        _categoryRepositoryMock
+            .Setup(x => x.GetByIdAsync(_entity.Category.Id, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(_entity.Category);
     }
 
     [Fact]
@@ -62,7 +74,7 @@ public class UpdateEventCommandHandlerTests
     {
         // Arrange
         _eventRepositoryMock
-            .Setup(x => x.GetByIdAsync(_command.Id, It.IsAny<CancellationToken>()))
+            .Setup(x => x.GetByIdWithParticipantsAsync(_command.Id, It.IsAny<CancellationToken>()))
             .ReturnsAsync((Event)null!);
 
         // Act
@@ -70,7 +82,8 @@ public class UpdateEventCommandHandlerTests
 
         // Assert
         result.IsNotFound().Should().BeTrue();
-        result.Errors.First().Should().Be($"Event with id {_command.Id} not found");
+        result.Errors.Should()
+            .BeEquivalentTo(EventResults.NotFound.ById(_command.Id).Errors);
     }
 
     [Fact]
@@ -78,20 +91,45 @@ public class UpdateEventCommandHandlerTests
     {
         // Arrange
         _eventRepositoryMock
-            .Setup(x => x.GetByIdAsync(_command.Id, It.IsAny<CancellationToken>()))
+            .Setup(x => x.GetByIdWithParticipantsAsync(_command.Id, It.IsAny<CancellationToken>()))
             .ReturnsAsync(_entity);
 
         _eventRepositoryMock
             .Setup(x => x.GetByNameAsync(_command.Name, It.IsAny<CancellationToken>()))
-            .ReturnsAsync(_entity);
+            .ReturnsAsync(new Event());
 
         // Act
         var result = await CreateHandler().Handle(_command, CancellationToken.None);
 
         // Assert
         result.IsInvalid().Should().BeTrue();
-        result.ValidationErrors.First().ErrorMessage
-            .Should().Be($"Event with name {_command.Name} already exists");
+        result.ValidationErrors.Should()
+            .BeEquivalentTo(EventResults.Invalid.NameNotUnique(_command.Name).ValidationErrors);
+    }
+
+    [Fact]
+    public async Task Handle_Should_ReturnNotFound_WhenCategoryNotExists()
+    {
+        // Arrange
+        _eventRepositoryMock
+            .Setup(x => x.GetByIdWithParticipantsAsync(_command.Id, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(_entity);
+
+        _eventRepositoryMock
+            .Setup(x => x.GetByNameAsync(_command.Name, It.IsAny<CancellationToken>()))
+            .ReturnsAsync((Event)null!);
+
+        _categoryRepositoryMock
+            .Setup(x => x.GetByIdAsync(_entity.Category!.Id, It.IsAny<CancellationToken>()))
+            .ReturnsAsync((Category)null!);
+
+        // Act
+        var result = await CreateHandler().Handle(_command, CancellationToken.None);
+
+        // Assert
+        result.IsNotFound().Should().BeTrue();
+        result.Errors.Should()
+            .BeEquivalentTo(CategoryResults.NotFound.ById(_entity.Category!.Id).Errors);
     }
 
     [Fact]
@@ -99,7 +137,7 @@ public class UpdateEventCommandHandlerTests
     {
         // Arrange
         _eventRepositoryMock
-            .Setup(x => x.GetByIdAsync(_command.Id, It.IsAny<CancellationToken>()))
+            .Setup(x => x.GetByIdWithParticipantsAsync(_command.Id, It.IsAny<CancellationToken>()))
             .ReturnsAsync(_entity);
 
         _eventRepositoryMock
@@ -120,7 +158,7 @@ public class UpdateEventCommandHandlerTests
     {
         // Arrange
         _eventRepositoryMock
-            .Setup(x => x.GetByIdAsync(_command.Id, It.IsAny<CancellationToken>()))
+            .Setup(x => x.GetByIdWithParticipantsAsync(_command.Id, It.IsAny<CancellationToken>()))
             .ReturnsAsync(_entity);
         
         _eventRepositoryMock
@@ -140,7 +178,7 @@ public class UpdateEventCommandHandlerTests
     {
         // Arrange
         _eventRepositoryMock
-            .Setup(x => x.GetByIdAsync(_command.Id, It.IsAny<CancellationToken>()))
+            .Setup(x => x.GetByIdWithParticipantsAsync(_command.Id, It.IsAny<CancellationToken>()))
             .ReturnsAsync(_entity);
         
         _eventRepositoryMock
@@ -160,7 +198,7 @@ public class UpdateEventCommandHandlerTests
     {
         // Arrange
         _eventRepositoryMock
-            .Setup(x => x.GetByIdAsync(_command.Id, It.IsAny<CancellationToken>()))
+            .Setup(x => x.GetByIdWithParticipantsAsync(_command.Id, It.IsAny<CancellationToken>()))
             .ReturnsAsync(_entity);
         
         _eventRepositoryMock
@@ -182,6 +220,7 @@ public class UpdateEventCommandHandlerTests
         return new UpdateEventCommandHandler(
             _eventRepositoryMock.Object, 
             _unitOfWorkMock.Object, 
+            _categoryRepositoryMock.Object,
             _mapperMock.Object,
             _emailSenderMock.Object,
             _linkFactory
@@ -195,9 +234,9 @@ public class UpdateEventCommandHandlerTests
             entity.Name,
             entity.Description,
             entity.Place,
-            entity.Category,
             entity.CurrentParticipants,
             entity.MaxParticipants,
+            new CategoryDto(Guid.NewGuid(), "Category"),
             entity.Date,
             new ImageDto(Guid.NewGuid(), "")
         );

@@ -1,4 +1,5 @@
 using Application.Abstractions;
+using Application.ErrorResults;
 using Ardalis.Result;
 using Domain;
 using Domain.Repositories;
@@ -17,10 +18,10 @@ internal sealed class DeleteEventImageCommandHandler(
     {
         var eventEntity = await _eventRepository.GetByIdAsync(request.EventId, cancellationToken);
         if (eventEntity is null)
-            return Result.NotFound($"Event with id {request.EventId} not found");
+            return EventResults.NotFound.ById(request.EventId);
 
         if (eventEntity.Image is null)
-            return Result.Invalid(new ValidationError($"Event with id {request.EventId} has no image"));
+            return EventResults.Invalid.HasNoImage(request.EventId);
 
         await _s3Client.DeleteFileAsync
             (eventEntity.Image.BucketName, eventEntity.Image.ObjectKey, cancellationToken);

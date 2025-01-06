@@ -1,4 +1,5 @@
 using Application.Dtos;
+using Application.ErrorResults;
 using Application.Events.CreateEvent;
 using Ardalis.Result;
 using AutoMapper;
@@ -12,6 +13,7 @@ namespace Application.Tests.Events;
 public class CreateEventCommandHandlerTests
 {
     private readonly Mock<IEventRepository> _eventRepositoryMock;
+    private readonly Mock<ICategoryRepository> _categoryRepositoryMock;
     private readonly Mock<IMapper> _mapperMock;
     private readonly Mock<IUnitOfWork> _unitOfWorkMock;
 
@@ -21,16 +23,32 @@ public class CreateEventCommandHandlerTests
     public CreateEventCommandHandlerTests()
     {
         _eventRepositoryMock = new();
+        _categoryRepositoryMock = new();
         _unitOfWorkMock = new();
         
-        _entity = new Event { Name = "Name" };
-        _command = new CreateEventCommand
-            (_entity.Name, "", "", "", 1, _entity.Date);
+        _entity = new Event
+        { 
+            Name = "Name" ,
+            Category = new Category() { Id = Guid.NewGuid(), Name = "Category"},
+        };
+        
+        _command = new CreateEventCommand(
+            _entity.Name, 
+            "", 
+            "", 
+            10, 
+            new CategoryDto(_entity.Category.Id, _entity.Category.Name), 
+            _entity.Date
+        );
 
         _mapperMock = new();
         _mapperMock
             .Setup(x => x.Map<EventDto>(It.IsAny<Event>()))
             .Returns((Event e) => Map(e));
+        
+        _categoryRepositoryMock
+            .Setup(x => x.GetByIdAsync(_entity.Category.Id, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(_entity.Category);
     }
 
     [Fact]
@@ -46,12 +64,33 @@ public class CreateEventCommandHandlerTests
 
         // Assert
         result.IsInvalid().Should().BeTrue();
-        result.ValidationErrors.First().ErrorMessage
-            .Should().Be($"Event with name {_command.Name} already exists");
+        result.ValidationErrors.Should()
+            .BeEquivalentTo(EventResults.Invalid.NameNotUnique(_command.Name).ValidationErrors);
     }
 
     [Fact]
-    public async Task Handle_Should_ReturnSuccess_WhenEventNameIsUnique()
+    public async Task Handle_Should_ReturnNotFound_WhenCategoryNotExists()
+    {
+        // Arrange
+        _eventRepositoryMock
+            .Setup(x => x.GetByNameAsync(_command.Name, It.IsAny<CancellationToken>()))
+            .ReturnsAsync((Event)null!);
+
+        _categoryRepositoryMock
+            .Setup(x => x.GetByIdAsync(_entity.Category!.Id, It.IsAny<CancellationToken>()))
+            .ReturnsAsync((Category)null!);
+
+        // Act
+        var result = await CreateHandler().Handle(_command, CancellationToken.None);
+
+        // Assert
+        result.IsNotFound().Should().BeTrue();
+        result.Errors.Should()
+            .BeEquivalentTo(CategoryResults.NotFound.ById(_entity.Category!.Id).Errors);
+    }
+
+    [Fact]
+    public async Task Handle_Should_ReturnCreated_WhenEventNameIsUnique()
     {
         // Arrange
         _eventRepositoryMock
@@ -103,6 +142,7 @@ public class CreateEventCommandHandlerTests
     {
         return new CreateEventCommandHandler(
             _eventRepositoryMock.Object, 
+            _categoryRepositoryMock.Object,
             _unitOfWorkMock.Object, 
             _mapperMock.Object
         );
@@ -115,9 +155,9 @@ public class CreateEventCommandHandlerTests
             entity.Name,
             entity.Description,
             entity.Place,
-            entity.Category,
             entity.CurrentParticipants,
             entity.MaxParticipants,
+            new CategoryDto(Guid.NewGuid(), "Category"),
             entity.Date,
             new ImageDto(Guid.NewGuid(), "")
         );

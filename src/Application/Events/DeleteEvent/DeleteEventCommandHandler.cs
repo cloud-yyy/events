@@ -1,4 +1,5 @@
 using Application.Abstractions;
+using Application.ErrorResults;
 using Ardalis.Result;
 using Domain;
 using Domain.Entities;
@@ -19,7 +20,7 @@ internal sealed class DeleteEventCommandHandler(
     {
         var eventEntity = await _eventRepository.GetByIdAsync(request.Id, cancellationToken);
         if (eventEntity is null)
-            return Result.NotFound($"Event with id {request.Id} not found");
+            return EventResults.NotFound.ById(request.Id);
 
         if (eventEntity.Image is not null)
         {

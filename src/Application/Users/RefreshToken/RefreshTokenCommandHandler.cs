@@ -1,6 +1,7 @@
 using System.Security.Claims;
 using Application.Abstractions;
 using Application.Dtos;
+using Application.ErrorResults;
 using Ardalis.Result;
 using Domain;
 using Domain.Repositories;
@@ -23,9 +24,7 @@ internal sealed class RefreshTokenCommandHandler(
             .SingleOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
 
         if (userIdClaim is null)
-            return Result.Invalid(
-                new ValidationError(nameof(request.RefreshToken), "Invalid access token")
-            );
+            return UserResults.Invalid.InvalidAccessToken();
 
         var userId = Guid.Parse(userIdClaim);
         var refreshToken = await _refreshTokenRepository.GetByUserIdAsync(userId, cancellationToken);
@@ -41,8 +40,6 @@ internal sealed class RefreshTokenCommandHandler(
             return new TokenDto(newAccessToken, newResfreshToken);
         }
 
-        return Result.Invalid(
-            new ValidationError(nameof(request.RefreshToken), "Invalid refresh token")
-        );
+        return UserResults.Invalid.InvalidRefreshToken();
     }
 }

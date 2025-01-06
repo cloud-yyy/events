@@ -1,5 +1,6 @@
 using Application.Abstractions;
 using Application.Dtos;
+using Application.ErrorResults;
 using Ardalis.Result;
 using AutoMapper;
 using Domain.Repositories;
@@ -17,13 +18,13 @@ public class GetEventParticipantByIdQueryHandler(
     {
         var eventEntity = await _eventRepository.GetByIdAsync(request.EventId, cancellationToken);
         if (eventEntity is null)
-            return Result.NotFound($"Event with id {request.EventId} not found");
+            return EventResults.NotFound.ById(request.EventId);
 
         var registration = await _registrationRepository
             .GetParticipantByIdAsync(eventEntity.Id, request.UserId, cancellationToken);
 
         if (registration is null)
-            return Result.NotFound($"Participant with id {request.UserId} not found");
+            return RegistrationResults.NotFound.ByUserIdAndEventId(request.UserId, request.EventId);
 
         return Result.Success(_mapper.Map<ParticipantDto>(registration));
     }

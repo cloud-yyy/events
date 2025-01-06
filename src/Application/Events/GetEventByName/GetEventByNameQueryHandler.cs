@@ -1,5 +1,6 @@
 using Application.Abstractions;
 using Application.Dtos;
+using Application.ErrorResults;
 using Ardalis.Result;
 using AutoMapper;
 using Domain.Repositories;
@@ -16,7 +17,7 @@ internal sealed class GetEventByNameQueryHandler(
         var eventEntity = await _eventResository.GetByNameAsync(request.Name, cancellationToken);
 
         if (eventEntity is null)
-            return Result.NotFound($"Event with name {request.Name} not found");
+            return EventResults.NotFound.ByName(request.Name);
 
         return Result.Success(_mapper.Map<EventDto>(eventEntity));
     }

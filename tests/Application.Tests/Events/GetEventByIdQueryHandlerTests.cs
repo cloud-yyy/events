@@ -1,4 +1,5 @@
 using Application.Dtos;
+using Application.ErrorResults;
 using Application.Events.GetEventById;
 using Ardalis.Result;
 using AutoMapper;
@@ -23,7 +24,15 @@ public class GetEventByIdQueryHandlerTests
 
         _entity = new(){ Id = Guid.NewGuid()};
         _dto = new(
-            _entity.Id, "", "", "", "", 0, 10, DateOnly.FromDateTime(DateTime.UtcNow), new ImageDto()
+            _entity.Id, 
+            string.Empty, 
+            string.Empty, 
+            string.Empty, 
+            0, 
+            10, 
+            new CategoryDto(Guid.NewGuid(), "Category"), 
+            DateOnly.FromDateTime(DateTime.UtcNow), 
+            new ImageDto()
         );
     }
 
@@ -42,7 +51,8 @@ public class GetEventByIdQueryHandlerTests
 
         // Assert
         result.IsNotFound().Should().BeTrue();
-        result.Errors.First().Should().Be($"Event with id {query.Id} not found");
+        result.Errors.Should()
+            .BeEquivalentTo(EventResults.NotFound.ById(query.Id).Errors);
     }
 
     [Fact]

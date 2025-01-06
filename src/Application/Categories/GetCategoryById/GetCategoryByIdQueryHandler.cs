@@ -1,5 +1,6 @@
 using Application.Abstractions;
 using Application.Dtos;
+using Application.ErrorResults;
 using Ardalis.Result;
 using AutoMapper;
 using Domain.Repositories;
@@ -14,9 +15,9 @@ public class GetCategoryByIdQueryHandler(
     public async Task<Result<CategoryDto>> Handle
         (GetCategoryByIdQuery request, CancellationToken cancellationToken)
     {
-        var category = await _categoryRepository.GetByIdAsync(request.Id);
+        var category = await _categoryRepository.GetByIdAsync(request.Id, cancellationToken);
         if (category is null)
-            return Result.NotFound($"Category with id {request.Id} not found");
+            return CategoryResults.NotFound.ById(request.Id);
 
         return Result.Success(_mapper.Map<CategoryDto>(category));
     }

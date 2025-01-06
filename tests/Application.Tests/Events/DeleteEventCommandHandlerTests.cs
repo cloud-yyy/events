@@ -1,4 +1,5 @@
 using Application.Abstractions;
+using Application.ErrorResults;
 using Application.Events.DeleteEvent;
 using Ardalis.Result;
 using Domain;
@@ -42,7 +43,8 @@ public class DeleteEventCommandHandlerTests
         {
             Id = _command.Id, 
             Participants = [new() , new(), new()],
-            Image = new Image()};
+            Image = new Image()
+        };
 
         _httpContextAccessorMock
             .Setup(x => x.HttpContext)
@@ -62,7 +64,8 @@ public class DeleteEventCommandHandlerTests
 
         // Assert
         result.IsNotFound().Should().BeTrue();
-        result.Errors.First().Should().Be($"Event with id {_command.Id} not found");
+        result.Errors.Should()
+            .BeEquivalentTo(EventResults.NotFound.ById(_command.Id).Errors);
     }
 
     [Fact]

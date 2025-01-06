@@ -1,5 +1,6 @@
 using Application.Abstractions;
 using Application.Dtos;
+using Application.ErrorResults;
 using Ardalis.Result;
 using AutoMapper;
 using Domain;
@@ -20,9 +21,7 @@ internal sealed class CreateRoleCommandHandler(
         var existed = await _roleRepository.GetByNameAsync(request.Name, cancellationToken);
         
         if (existed is not null)
-            return Result.Invalid(
-                new ValidationError(nameof(request.Name), $"Role with name {request.Name} already exists")
-            );
+            return RoleResults.Invalid.NameNotUnique(request.Name);
 
         var role = new Role { Name = request.Name };
 

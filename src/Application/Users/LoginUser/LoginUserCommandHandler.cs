@@ -1,5 +1,6 @@
 using Application.Abstractions;
 using Application.Dtos;
+using Application.ErrorResults;
 using Ardalis.Result;
 using Domain.Repositories;
 
@@ -18,14 +19,10 @@ internal sealed class LoginUserCommandHandler(
         var user = await _userRepository.GetByEmailAsync(request.Email, cancellationToken);
 
         if (user is null)
-            return Result.Invalid(
-                new ValidationError(nameof(request.Email), "User not found")
-            );
+            return UserResults.NotFound.ByEmail(request.Email);
 
         if (!user.PasswordHash.Equals(_passwordHasher.HashPassword(request.Password)))
-            return Result.Invalid(
-                new ValidationError(nameof(request.Password), "Invalid password")
-            );
+            return UserResults.Invalid.InvalidPassword();
 
         var accessToken = _jwtTokenProvider.GenerateToken(user);
         var resfreshToken = await _refreshTokenProvider.GenerateToken(user);

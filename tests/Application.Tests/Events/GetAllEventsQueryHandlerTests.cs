@@ -31,21 +31,21 @@ public class GetAllEventsQueryHandlerTests
                 Id = Guid.NewGuid(), 
                 Date = new DateOnly(2000, 01, 01), 
                 Place = "Place 1", 
-                Category = "Category 1",
+                Category = new Category { Name = "Category 1" },
                 Image = new Image()
             },
             new(){ 
                 Id = Guid.NewGuid(), 
                 Date = new DateOnly(2000, 01, 02), 
                 Place = "Place 2", 
-                Category = "Category 2",
+                Category = new Category { Name = "Category 2" },
                 Image = new Image()
             },
             new(){ 
                 Id = Guid.NewGuid(), 
                 Date = new DateOnly(2000, 01, 03), 
                 Place = "Place 3", 
-                Category = "Category 3",
+                Category = new Category { Name = "Category 3" },
                 Image = new Image()
             }
         ];
@@ -128,13 +128,13 @@ public class GetAllEventsQueryHandlerTests
         // Arrange
         var entity = _entities.First();
         var expected = _dtos.First();
-        var filter = new EventFilter(Category: entity.Category);
-        var query = new GetAllEventsQuery(1, 3, Category: entity.Category);
+        var filter = new EventFilter(Category: entity.Category?.Name);
+        var query = new GetAllEventsQuery(1, 3, Category: entity.Category?.Name);
     
         _eventRepositoryMock
             .Setup(x => x.GetAllAsync(query.PageNumber, query.PageSize, filter, It.IsAny<CancellationToken>()))
             .ReturnsAsync(PagedList<Event>.Create(
-                _entities.Where(e => e.Category == filter.Category).AsQueryable(), 
+                _entities.Where(e => e.Category?.Name == filter.Category).AsQueryable(), 
                 query.PageNumber, 
                 query.PageSize)
             );
@@ -162,9 +162,9 @@ public class GetAllEventsQueryHandlerTests
             entity.Name,
             entity.Description,
             entity.Place,
-            entity.Category,
             entity.CurrentParticipants,
             entity.MaxParticipants,
+            new CategoryDto(entity.Category!.Id, entity.Category.Name),
             entity.Date,
             new ImageDto(entity.Image!.Id, entity.Image.ObjectKey)
         );

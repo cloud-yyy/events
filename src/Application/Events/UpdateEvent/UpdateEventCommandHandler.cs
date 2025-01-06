@@ -1,5 +1,6 @@
 using Application.Abstractions;
 using Application.Dtos;
+using Application.ErrorResults;
 using Ardalis.Result;
 using AutoMapper;
 using Domain;
@@ -20,25 +21,16 @@ internal sealed class UpdateEventCommandHandler(
     public async Task<Result<EventDto>> Handle(UpdateEventCommand request, CancellationToken cancellationToken)
     {
         var eventEntity = await _eventRepository.GetByIdWithParticipantsAsync(request.Id, cancellationToken);
-
         if (eventEntity is null)
-            return Result.NotFound($"Event with id {request.Id} not found");
+            return EventResults.NotFound.ById(request.Id);
 
         var existed = await _eventRepository.GetByNameAsync(request.Name, cancellationToken);
         if (existed is not null && existed.Id != eventEntity.Id)
-        {
-            return Result.Invalid(
-                new ValidationError(nameof(request.Name), $"Event with name {request.Name} already exists")
-            );
-        }
+            return EventResults.Invalid.NameNotUnique(request.Name);
 
         var category = await _categoryRepository.GetByIdAsync(request.Category.Id, cancellationToken);
         if (category is null)
-        {
-            return Result.Invalid(
-                new ValidationError(nameof(request.Category), $"Category with name {request.Category} not found")
-            );
-        }
+            return CategoryResults.NotFound.ById(request.Category.Id);
 
         eventEntity.Name = request.Name;
         eventEntity.Description = request.Description;

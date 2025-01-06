@@ -1,4 +1,5 @@
 using Application.Abstractions;
+using Application.ErrorResults;
 using Ardalis.Result;
 using Domain;
 using Domain.Repositories;
@@ -14,7 +15,7 @@ internal sealed class DeleteRoleCommandHandler(
     {
         var role = await _roleRepository.GetByIdAsync(request.Id, cancellationToken);
         if (role is null)
-            return Result.NotFound($"Role with id {request.Id} not found");
+            return RoleResults.NotFound.ById(request.Id);
 
         _roleRepository.Delete(role);
         await _unitOfWork.SaveChangesAsync(cancellationToken);

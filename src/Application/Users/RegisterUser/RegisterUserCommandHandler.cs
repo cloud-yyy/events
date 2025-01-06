@@ -1,5 +1,6 @@
 using Application.Abstractions;
 using Application.Dtos;
+using Application.ErrorResults;
 using Ardalis.Result;
 using AutoMapper;
 using Domain;
@@ -22,11 +23,7 @@ internal sealed class RegisterUserCommandHandler(
         var user = await _userRepository.GetByEmailAsync(request.Email, cancellationToken);
         
         if (user is not null)
-        {
-            return Result.Invalid(
-                new ValidationError(nameof(request.Email), $"User with email {request.Email} already exists")
-            );
-        }
+            return UserResults.Invalid.EmailNotUnique(request.Email);
 
         var role = await _roleRepository.GetByNameAsync(RoleNames.User, cancellationToken);
 
