@@ -1,13 +1,11 @@
-using System.Security.Claims;
 using Application.Abstractions;
 using Application.Dtos;
 using Application.ErrorResults;
 using Ardalis.Result;
 using AutoMapper;
-using Domain;
+using Domain.Authentication;
 using Domain.Constants;
 using Domain.Repositories;
-using Microsoft.AspNetCore.Http;
 
 namespace Application.Users.UpdateUser;
 
@@ -16,19 +14,18 @@ internal sealed class UpdateUserCommandHandler(
     IRoleRepository _roleRepository,
     IUnitOfWork _unitOfWork,
     IMapper _mapper,
-    IHttpContextAccessor _httpContextAccessor
+    ICurrentUserAccessor _currentUserAccessor
 ) : ICommandHandler<UpdateUserCommand, UserDto>
 {
     public async Task<Result<UserDto>> Handle
         (UpdateUserCommand request, CancellationToken cancellationToken)
     {
-        var userIdStr = _httpContextAccessor.HttpContext!.User.Claims
-            .FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
-        var userId = Guid.Parse(userIdStr!);
-        var userRole = _httpContextAccessor.HttpContext!.User.Claims
-            .FirstOrDefault(c => c.Type == ClaimTypes.Role)?.Value;
+        if (_currentUserAccessor.UserId is null)
+            return Result.Unauthorized();
 
-        if (userId != request.Id || userRole != RoleNames.Admin)
+        var userId = (Guid)_currentUserAccessor.UserId;
+
+        if (userId != request.Id || _currentUserAccessor.Role != RoleNames.Admin)
             return UserResults.Invalid.CannotUpdate(request.Id);
 
         var user = await _userRepository.GetByIdAsync(userId, cancellationToken);
@@ -39,7 +36,7 @@ internal sealed class UpdateUserCommandHandler(
         if (role is null)
             return RoleResults.NotFound.ById(request.RoleId);
 
-        if (role.Name == RoleNames.Admin && userRole != RoleNames.Admin)
+        if (role.Name == RoleNames.Admin && _currentUserAccessor.Role != RoleNames.Admin)
             return UserResults.Invalid.CannotGrantRole(RoleNames.Admin);
 
         user.FirstName = request.FirstName;

@@ -75,5 +75,7 @@ public static class ServicesExtensions
         services.ConfigureOptions<JwtOptionsSetup>();
         services.ConfigureOptions<RefreshTokenOptionsSetup>();
         services.Configure<AwsOptions>(configuration.GetSection("AWS"));
+
+        services.AddScoped<ICurrentUserAccessor, CurrentUserAccessor>();
     }
 }

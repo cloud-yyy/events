@@ -8,9 +8,6 @@ namespace Web.Middlewares
         RequestDelegate _next, 
         ILogger<ExceptionHandlingMiddleware> _logger)
     {
-        // private static readonly JsonSerializerOptions _jsonSerializerOptions = 
-        //     new() { PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
-
         public async Task InvokeAsync(HttpContext context)
         {
             try

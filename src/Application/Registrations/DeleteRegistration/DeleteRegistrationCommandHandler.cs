@@ -1,24 +1,23 @@
-using System.Security.Claims;
 using Application.Abstractions;
 using Application.ErrorResults;
 using Ardalis.Result;
-using Domain;
+using Domain.Authentication;
 using Domain.Repositories;
-using Microsoft.AspNetCore.Http;
 
 namespace Application.Registrations.DeleteRegistration;
 
 internal sealed class DeleteRegistrationCommandHandler(
     IRegistrationRepository _registrationRepository,
     IUnitOfWork _unitOfWork,
-    IHttpContextAccessor _httpContextAccessor
+    ICurrentUserAccessor _currentUserAccessor
 ) : ICommandHandler<DeleteRegistrationCommand>
 {
     public async Task<Result> Handle(DeleteRegistrationCommand request, CancellationToken cancellationToken)
     {
-        var userIdStr = _httpContextAccessor.HttpContext!.User.Claims
-            .FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
-        var userId = Guid.Parse(userIdStr!);
+        if (_currentUserAccessor.UserId is null)
+            return Result.Unauthorized();
+
+        var userId = (Guid)_currentUserAccessor.UserId;
 
         var registration = await _registrationRepository
             .GetByUserIdAndEventIdAsync(userId, request.EventId, cancellationToken);
