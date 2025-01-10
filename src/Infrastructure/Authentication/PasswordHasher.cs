@@ -1,6 +1,6 @@
 using System.Security.Cryptography;
 using System.Text;
-using Application.Abstractions;
+using Domain.Authentication;
 
 namespace Infrastructure.Authentication;
 

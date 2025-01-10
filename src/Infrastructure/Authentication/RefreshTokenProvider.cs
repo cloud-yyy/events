@@ -1,9 +1,8 @@
 using System.Security.Cryptography;
-using Application.Abstractions;
-using Domain;
+using Domain.Authentication;
 using Domain.Entities;
 using Domain.Repositories;
-using Application.Options;
+using Infrastructure.Options;
 using Microsoft.Extensions.Options;
 
 namespace Infrastructure.Authentication;

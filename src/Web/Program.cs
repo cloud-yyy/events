@@ -1,5 +1,6 @@
-using Application.Abstractions;
 using Application.Extensions;
+using Domain;
+using Domain.Authentication;
 using Domain.Constants;
 using Domain.Entities;
 using DotNetEnv;

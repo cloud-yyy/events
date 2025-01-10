@@ -30,7 +30,7 @@ public class CategoriesController(ISender sender) : ApiController(sender)
 
     [HttpGet]
     [Route("{id:guid}")]
-    public async Task<ActionResult<CategoryDto>> GetById([FromBody] Guid id)
+    public async Task<ActionResult<CategoryDto>> GetById([FromRoute] Guid id)
     {
         var query = new GetCategoryByIdQuery(id);
 

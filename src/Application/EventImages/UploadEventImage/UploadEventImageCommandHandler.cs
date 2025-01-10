@@ -1,11 +1,11 @@
 using Application.Abstractions;
 using Application.Dtos;
 using Application.ErrorResults;
-using Application.Options;
 using Ardalis.Result;
 using Domain;
 using Domain.Entities;
 using Domain.Repositories;
+using Infrastructure.Options;
 using Microsoft.Extensions.Options;
 
 namespace Application.EventImages.UploadEventImage;
@@ -24,6 +24,9 @@ internal sealed class UploadEventImageCommandHandler(
         var eventEntity = await _eventRepository.GetByIdAsync(request.EventId, cancellationToken);
         if (eventEntity is null)
             return EventResults.NotFound.ById(request.EventId);
+
+        if (eventEntity.Image is not null)
+            return EventResults.Invalid.HasImage(request.EventId);
 
         using var stream = request.File.OpenReadStream();
         var contentType = request.File.ContentType;
