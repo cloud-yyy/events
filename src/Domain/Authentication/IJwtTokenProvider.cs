@@ -1,7 +1,6 @@
-using System;
 using Domain.Entities;
 
-namespace Application.Abstractions;
+namespace Domain.Authentication;
 
 public interface IJwtTokenProvider
 {

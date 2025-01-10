@@ -3,7 +3,7 @@ using Application.Dtos;
 using Application.ErrorResults;
 using Ardalis.Result;
 using AutoMapper;
-using Domain;
+using Domain.Authentication;
 using Domain.Constants;
 using Domain.Entities;
 using Domain.Repositories;

@@ -15,6 +15,9 @@ internal static class EventResults
         public static Result NameNotUnique(string name)
             => Result.Invalid(new ValidationError(nameof(name), $"Event with name {name} already exists"));
         
+        public static Result HasImage(Guid id) => 
+            Result.Invalid(new ValidationError(nameof(id), $"Event with id {id} already has image"));
+
         public static Result HasNoImage(Guid id) => 
             Result.Invalid(new ValidationError(nameof(id), $"Event with id {id} has no image"));
 

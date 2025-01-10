@@ -9,30 +9,11 @@ public class CategoryRepository(
     ApplicationDbContext _context
 ) : ICategoryRepository
 {
-    public Category Add(Category category)
-    {
-        _context.Add(category);
-        return category;
-    }
-
-    public Category Update(Category category)
-    {
-        _context.Attach(category);
-        _context.Entry(category).State = EntityState.Modified;
-        return category;
-    }
-
-    public void Delete(Category category)
-    {
-        _context.Remove(category);
-    }
-
     public async Task<IPagedList<Category>> GetAllAsync
         (int pageNumber, int pageSize, CancellationToken token = default)
     {
-        var query = _context.Categories
-            .Include(c => c.Events)
-            .AsQueryable();
+        IQueryable<Category> query = _context.Categories
+            .Include(c => c.Events);
 
         return await PagedList<Category>.CreateAsync(query, pageNumber, pageSize, token);
     }
@@ -49,5 +30,21 @@ public class CategoryRepository(
         return await _context.Categories
             .Include(c => c.Events)
             .SingleOrDefaultAsync(c => c.Name == name, token);
+    }
+
+    public void Add(Category category)
+    {
+        _context.Categories.Add(category);
+    }
+
+    public void Update(Category category)
+    {
+        _context.Categories.Attach(category);
+        _context.Categories.Entry(category).State = EntityState.Modified;
+    }
+
+    public void Delete(Category category)
+    {
+        _context.Categories.Remove(category);
     }
 }

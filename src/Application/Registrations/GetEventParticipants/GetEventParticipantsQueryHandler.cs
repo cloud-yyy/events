@@ -5,7 +5,7 @@ using AutoMapper;
 using Domain;
 using Domain.Repositories;
 
-namespace Application.Registrations.GetParticipants;
+namespace Application.Registrations.GetEventParticipants;
 
 internal sealed class GetEventParticipantsQueryHandler(
     IEventRepository _eventRepository,

@@ -1,6 +1,6 @@
 using System.Security.Claims;
 
-namespace Application.Abstractions;
+namespace Domain.Authentication;
 
 public interface IJwtTokenValidator
 {

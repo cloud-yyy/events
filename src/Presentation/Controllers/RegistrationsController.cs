@@ -2,7 +2,7 @@ using Application.Dtos;
 using Application.Registrations.CreateRegistration;
 using Application.Registrations.DeleteRegistration;
 using Application.Registrations.GetEventParticipantById;
-using Application.Registrations.GetParticipants;
+using Application.Registrations.GetEventParticipants;
 using Ardalis.Result.AspNetCore;
 using Domain;
 using Infrastructure.Authorization;

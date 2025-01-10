@@ -9,21 +9,6 @@ public class RefreshTokenRepository(
     ApplicationDbContext _context
 ) : IRefreshTokenRepository
 {
-    public RefreshToken Add(RefreshToken refreshToken)
-    {
-        _context.RefreshTokens.Add(refreshToken);
-        return refreshToken;
-    }
-
-    public async Task DeleteByConditionAsync(
-        Expression<Func<RefreshToken, bool>> condition, 
-        CancellationToken token = default)
-    {
-        await _context.RefreshTokens
-            .Where(condition)
-            .ExecuteDeleteAsync(token);
-    }
-
     public async Task<RefreshToken?> GetByTokenAsync(string tokenValue, CancellationToken token = default)
     {
         return await _context.RefreshTokens
@@ -36,5 +21,19 @@ public class RefreshTokenRepository(
         return await _context.RefreshTokens
             .Include(r => r.User)
             .FirstOrDefaultAsync(r => r.UserId == userId, token);
+    }
+
+    public void Add(RefreshToken refreshToken)
+    {
+        _context.RefreshTokens.Add(refreshToken);
+    }
+
+    public async Task DeleteByConditionAsync(
+        Expression<Func<RefreshToken, bool>> condition, 
+        CancellationToken token = default)
+    {
+        await _context.RefreshTokens
+            .Where(condition)
+            .ExecuteDeleteAsync(token);
     }
 }

@@ -12,6 +12,7 @@ namespace Persistence.Tests.Repositories
         {
             Id = Guid.NewGuid(),
             Image = new(),
+            Category = new(),
             Participants = { new User() }
         };
 
@@ -47,8 +48,8 @@ namespace Persistence.Tests.Repositories
             // Assert
             entity.Should().NotBeNull();
             entity!.Id.Should().Be(_entity.Id);
-            entity.Image.Should().NotBeNull();
-            entity.Participants.Should().NotBeEmpty();
+            entity!.Category.Should().NotBeNull();
+            entity!.Category!.Id.Should().Be(_entity.Category!.Id);
         }
 
         [Fact]
@@ -86,19 +87,21 @@ namespace Persistence.Tests.Repositories
         }
 
         [Fact]
-        public void Add_Should_CallContextAdd_WhenEventIsValid()
+        public async Task Add_Should_AddEvent_WhenEventIsValid()
         {
             // Arrange
             using var context = new ApplicationDbContext(CreateDatabase());
 
             var repository = new EventRepository(context);
             // Act
-            var entity = repository.Add(_entity);
+            repository.Add(_entity);
             context.SaveChanges();
 
             // Assert
-            context.Events.Count().Should().Be(1);
-            entity.Should().NotBeNull();
+            var count = await context.Events.CountAsync();
+            count.Should().Be(1);
+            var added = await context.Events.SingleAsync();
+            added.Id.Should().Be(_entity.Id);
         }
 
         private static DbContextOptions<ApplicationDbContext> CreateDatabase(

@@ -1,4 +1,4 @@
-namespace Application.Abstractions;
+namespace Domain;
 
 public interface IEmailSender
 {

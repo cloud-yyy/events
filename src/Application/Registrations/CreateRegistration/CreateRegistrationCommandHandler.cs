@@ -1,13 +1,11 @@
-using System.Security.Claims;
 using Application.Abstractions;
 using Application.Dtos;
 using Application.ErrorResults;
 using Ardalis.Result;
 using AutoMapper;
-using Domain;
+using Domain.Authentication;
 using Domain.Entities;
 using Domain.Repositories;
-using Microsoft.AspNetCore.Http;
 
 namespace Application.Registrations.CreateRegistration;
 
@@ -17,15 +15,16 @@ internal sealed class CreateRegistrationCommandHandler(
     IRegistrationRepository _registrationRepository,
     IUnitOfWork _unitOfWork,
     IMapper _mapper,
-    IHttpContextAccessor _httpContextAccessor
+    ICurrentUserAccessor _currentUserAccessor
 ) : ICommandHandler<CreateRegistrationCommand, ParticipantDto>
 {
     public async Task<Result<ParticipantDto>> Handle
         (CreateRegistrationCommand request, CancellationToken cancellationToken)
     {
-        var userIdStr = _httpContextAccessor.HttpContext!.User.Claims
-            .FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
-        var userId = Guid.Parse(userIdStr!);
+        if (_currentUserAccessor.UserId is null)
+            return Result.Unauthorized();
+
+        var userId = (Guid)_currentUserAccessor.UserId;
 
         var user = await _userRepository.GetByIdAsync(userId, cancellationToken);
         if (user is null)
@@ -35,7 +34,7 @@ internal sealed class CreateRegistrationCommandHandler(
         if (eventEntity is null)
             return EventResults.NotFound.ById(request.EventId);
 
-        var registration = await _registrationRepository.GetAsync
+        var registration = await _registrationRepository.GetByUserIdAndEventIdAsync
             (userId, request.EventId, cancellationToken);
 
         if (registration is not null)

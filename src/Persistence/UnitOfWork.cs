@@ -1,4 +1,4 @@
-using Domain;
+using Domain.Repositories;
 
 namespace Persistence;
 

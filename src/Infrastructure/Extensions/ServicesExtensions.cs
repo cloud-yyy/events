@@ -1,12 +1,13 @@
 using System.Text;
 using Amazon.S3;
-using Application.Abstractions;
-using Application.Options;
+using Domain;
+using Domain.Authentication;
 using Infrastructure.Authentication;
 using Infrastructure.Authorization;
 using Infrastructure.Authorization.Handlers;
 using Infrastructure.Authorization.Requirements;
 using Infrastructure.Email;
+using Infrastructure.Options;
 using Infrastructure.S3;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
@@ -70,5 +71,11 @@ public static class ServicesExtensions
 
             return new AmazonS3Client(options.AccessKey, options.SecretKey, config);
         });
+
+        services.ConfigureOptions<JwtOptionsSetup>();
+        services.ConfigureOptions<RefreshTokenOptionsSetup>();
+        services.Configure<AwsOptions>(configuration.GetSection("AWS"));
+
+        services.AddScoped<ICurrentUserAccessor, CurrentUserAccessor>();
     }
 }

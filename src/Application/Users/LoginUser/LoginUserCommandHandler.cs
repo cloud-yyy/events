@@ -2,6 +2,7 @@ using Application.Abstractions;
 using Application.Dtos;
 using Application.ErrorResults;
 using Ardalis.Result;
+using Domain.Authentication;
 using Domain.Repositories;
 
 namespace Application.Users.LoginUser;
