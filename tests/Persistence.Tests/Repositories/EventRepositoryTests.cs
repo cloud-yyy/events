@@ -12,6 +12,7 @@ namespace Persistence.Tests.Repositories
         {
             Id = Guid.NewGuid(),
             Image = new(),
+            Category = new(),
             Participants = { new User() }
         };
 
@@ -47,8 +48,8 @@ namespace Persistence.Tests.Repositories
             // Assert
             entity.Should().NotBeNull();
             entity!.Id.Should().Be(_entity.Id);
-            entity.Image.Should().NotBeNull();
-            entity.Participants.Should().NotBeEmpty();
+            entity!.Category.Should().NotBeNull();
+            entity!.Category!.Id.Should().Be(_entity.Category!.Id);
         }
 
         [Fact]

@@ -21,7 +21,7 @@ internal sealed class DeleteRegistrationCommandHandler(
         var userId = Guid.Parse(userIdStr!);
 
         var registration = await _registrationRepository
-            .GetAsync(userId, request.EventId, cancellationToken);
+            .GetByUserIdAndEventIdAsync(userId, request.EventId, cancellationToken);
 
         if (registration is null)
             return RegistrationResults.NotFound.ByUserIdAndEventId(userId, request.EventId);

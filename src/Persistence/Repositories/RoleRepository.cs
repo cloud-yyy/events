@@ -8,17 +8,6 @@ public class RoleRepository(
     ApplicationDbContext _context
 ) : IRoleRepository
 {
-    public Role Add(Role role)
-    {
-        _context.Roles.Add(role);
-        return role;
-    }
-
-    public void Delete(Role role)
-    {
-        _context.Roles.Remove(role);
-    }
-
     public async Task<IEnumerable<Role>> GetAllAsync(CancellationToken token = default)
     {
         return await _context.Roles.ToListAsync(token);
@@ -33,5 +22,16 @@ public class RoleRepository(
     {
         return await _context.Roles
             .SingleOrDefaultAsync(r => r.Name == name, token);
+    }
+
+    public Role Add(Role role)
+    {
+        _context.Roles.Add(role);
+        return role;
+    }
+
+    public void Delete(Role role)
+    {
+        _context.Roles.Remove(role);
     }
 }

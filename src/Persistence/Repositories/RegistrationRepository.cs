@@ -27,7 +27,7 @@ public class RegistrationRepository(
             .SingleOrDefaultAsync(r => r.EventId == eventId && r.UserId == userId, token);
     }
 
-    public async Task<Registration?> GetAsync
+    public async Task<Registration?> GetByUserIdAndEventIdAsync
         (Guid UserId, Guid EventId, CancellationToken cancellationToken = default)
     {
         return await _context.Registrations

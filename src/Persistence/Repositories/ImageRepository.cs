@@ -7,6 +7,11 @@ public class ImageRepository(
     ApplicationDbContext _context
 ) : IImageRepository
 {
+    public async Task<Image?> GetByIdAsync(Guid id, CancellationToken token = default)
+    {
+        return await _context.Images.FindAsync([id], token);
+    }
+
     public Image Add(Image image)
     {
         _context.Images.Add(image);
@@ -16,10 +21,5 @@ public class ImageRepository(
     public void Delete(Image image)
     {
         _context.Images.Remove(image);
-    }
-
-    public async Task<Image?> GetByIdAsync(Guid id, CancellationToken token = default)
-    {
-        return await _context.Images.FindAsync([id], token);
     }
 }

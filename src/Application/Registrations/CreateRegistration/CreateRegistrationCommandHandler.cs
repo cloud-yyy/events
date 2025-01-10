@@ -35,7 +35,7 @@ internal sealed class CreateRegistrationCommandHandler(
         if (eventEntity is null)
             return EventResults.NotFound.ById(request.EventId);
 
-        var registration = await _registrationRepository.GetAsync
+        var registration = await _registrationRepository.GetByUserIdAndEventIdAsync
             (userId, request.EventId, cancellationToken);
 
         if (registration is not null)
