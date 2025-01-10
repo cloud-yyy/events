@@ -10,7 +10,7 @@ public interface ICategoryRepository
         (Guid id, CancellationToken token = default);
     public Task<Category?> GetByNameAsync
         (string name, CancellationToken token = default);
-    public Category Add(Category category);
-    public Category Update(Category category);
+    public void Add(Category category);
+    public void Update(Category category);
     public void Delete(Category category);
 }

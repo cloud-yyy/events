@@ -22,16 +22,14 @@ public class UserRepository(
             .SingleOrDefaultAsync(u => u.Email == email, token);
     }
 
-    public User Add(User user)
+    public void Add(User user)
     {
         _context.Users.Add(user);
-        return user;
     }
 
-    public User Update(User user)
+    public void Update(User user)
     {
         _context.Users.Attach(user);
         _context.Users.Entry(user).State = EntityState.Modified;
-        return user;
     }
 }

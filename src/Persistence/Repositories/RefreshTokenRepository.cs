@@ -23,10 +23,9 @@ public class RefreshTokenRepository(
             .FirstOrDefaultAsync(r => r.UserId == userId, token);
     }
 
-    public RefreshToken Add(RefreshToken refreshToken)
+    public void Add(RefreshToken refreshToken)
     {
         _context.RefreshTokens.Add(refreshToken);
-        return refreshToken;
     }
 
     public async Task DeleteByConditionAsync(

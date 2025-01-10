@@ -37,10 +37,9 @@ public class RegistrationRepository(
             .SingleOrDefaultAsync(cancellationToken);
     }
 
-    public Registration Add(Registration registration)
+    public void Add(Registration registration)
     {
         _context.Registrations.Add(registration);
-        return registration;
     }
 
     public void Delete(Registration registration)

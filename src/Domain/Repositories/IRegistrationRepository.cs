@@ -10,6 +10,6 @@ public interface IRegistrationRepository
         (Guid eventId, Guid userId, CancellationToken token = default);
     public Task<Registration?> GetByUserIdAndEventIdAsync
         (Guid UserId, Guid EventId, CancellationToken cancellationToken = default);
-    public Registration Add(Registration registration);
+    public void Add(Registration registration);
     public void Delete(Registration registration);
 }

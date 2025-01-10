@@ -12,10 +12,9 @@ public class EventRepository(
     public async Task<IPagedList<Event>> GetAllAsync
         (int pageNumber, int pageSize, EventFilter? filter = null, CancellationToken token = default)
     {
-        var query = _context.Events
+        IQueryable<Event> query = _context.Events
             .Include(e => e.Image)
-            .Include(e => e.Category)
-            .AsQueryable();
+            .Include(e => e.Category);
 
         if (filter?.Date is not null)
             query = query.Where(e => e.Date == filter.Date);
@@ -54,17 +53,15 @@ public class EventRepository(
             .SingleOrDefaultAsync(e => e.Name == name, token);
     }
 
-    public Event Add(Event @event)
+    public void Add(Event @event)
     {
         _context.Events.Add(@event);
-        return @event;
     }
 
-    public Event Update(Event @event)
+    public void Update(Event @event)
     {
         _context.Events.Attach(@event);
         _context.Events.Entry(@event).State = EntityState.Modified;
-        return @event;
     }
 
     public void Delete(Event @event)

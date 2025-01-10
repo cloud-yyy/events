@@ -12,9 +12,8 @@ public class CategoryRepository(
     public async Task<IPagedList<Category>> GetAllAsync
         (int pageNumber, int pageSize, CancellationToken token = default)
     {
-        var query = _context.Categories
-            .Include(c => c.Events)
-            .AsQueryable();
+        IQueryable<Category> query = _context.Categories
+            .Include(c => c.Events);
 
         return await PagedList<Category>.CreateAsync(query, pageNumber, pageSize, token);
     }
@@ -33,17 +32,15 @@ public class CategoryRepository(
             .SingleOrDefaultAsync(c => c.Name == name, token);
     }
 
-    public Category Add(Category category)
+    public void Add(Category category)
     {
         _context.Categories.Add(category);
-        return category;
     }
 
-    public Category Update(Category category)
+    public void Update(Category category)
     {
         _context.Categories.Attach(category);
         _context.Categories.Entry(category).State = EntityState.Modified;
-        return category;
     }
 
     public void Delete(Category category)

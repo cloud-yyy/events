@@ -24,10 +24,9 @@ public class RoleRepository(
             .SingleOrDefaultAsync(r => r.Name == name, token);
     }
 
-    public Role Add(Role role)
+    public void Add(Role role)
     {
         _context.Roles.Add(role);
-        return role;
     }
 
     public void Delete(Role role)

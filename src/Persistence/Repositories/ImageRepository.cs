@@ -12,10 +12,9 @@ public class ImageRepository(
         return await _context.Images.FindAsync([id], token);
     }
 
-    public Image Add(Image image)
+    public void Add(Image image)
     {
         _context.Images.Add(image);
-        return image;
     }
 
     public void Delete(Image image)
