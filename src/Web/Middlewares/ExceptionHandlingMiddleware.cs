@@ -23,19 +23,27 @@ namespace Web.Middlewares
         
         private static Task HandleExceptionAsync(HttpContext context, Exception exception)
         {
+            var (statusCode, title) = exception switch
+            {
+                ArgumentException or InvalidOperationException 
+                    => (HttpStatusCode.BadRequest, "Invalid request"),
+                UnauthorizedAccessException 
+                    => (HttpStatusCode.Unauthorized, "Unauthorized access"),
+                _ => (HttpStatusCode.InternalServerError, "An unexpected error occurred")
+            };
+
             var problemDetails = new ProblemDetails
             {
-                Status = (int)HttpStatusCode.InternalServerError,
-                Title = "An unexpected error occurred!",
+                Status = (int)statusCode,
+                Title = title,
                 Detail = exception.Message,
                 Instance = context.Request.Path
             };
-            
+
             context.Response.ContentType = "application/problem+json";
-            context.Response.StatusCode = problemDetails.Status.Value;
-            
+            context.Response.StatusCode = (int)statusCode;
+
             var json = JsonSerializer.Serialize(problemDetails);
-            
             return context.Response.WriteAsync(json);
         }
     }
