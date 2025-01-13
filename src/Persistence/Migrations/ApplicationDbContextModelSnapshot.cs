@@ -212,12 +212,12 @@ namespace Persistence.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("7f190719-9b68-4012-85d9-b8e38a7f3d57"),
+                            Id = new Guid("62e8f843-f88f-4c97-86ab-358eb2bf3e66"),
                             Name = "Admin"
                         },
                         new
                         {
-                            Id = new Guid("e98ced67-58d0-48a0-bde1-eddd603fe26b"),
+                            Id = new Guid("94c2d1fa-7598-432e-a5b8-9ad619ecbe33"),
                             Name = "User"
                         });
                 });

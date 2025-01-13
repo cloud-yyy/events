@@ -25,7 +25,7 @@ internal sealed class UpdateUserCommandHandler(
 
         var userId = (Guid)_currentUserAccessor.UserId;
 
-        if (userId != request.Id || _currentUserAccessor.Role != RoleNames.Admin)
+        if (userId != request.Id && _currentUserAccessor.Role != RoleNames.Admin)
             return UserResults.Invalid.CannotUpdate(request.Id);
 
         var user = await _userRepository.GetByIdAsync(userId, cancellationToken);

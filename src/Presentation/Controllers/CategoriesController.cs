@@ -2,6 +2,7 @@ using Application.Categories.CreateCategory;
 using Application.Categories.DeleteCategory;
 using Application.Categories.GetAllCategories;
 using Application.Categories.GetCategoryById;
+using Application.Categories.UpdateCategory;
 using Application.Dtos;
 using Ardalis.Result.AspNetCore;
 using Domain;
@@ -45,6 +46,20 @@ public class CategoriesController(ISender sender) : ApiController(sender)
     public async Task<ActionResult<CategoryDto>> Create([FromBody] CreateCategoryRequest request)
     {
         var command = new CreateCategoryCommand(request.Name);
+
+        var result = await Sender.Send(command);
+
+        return this.ToActionResult(result);
+    }
+
+    [Authorize(Policy = PolicyNames.Admin)]
+    [HttpPut]
+    [Route("{id:guid}")]
+    public async Task<ActionResult<CategoryDto>> Update(
+        [FromRoute] Guid id, 
+        [FromBody] UpdateCategoryRequest request)
+    {
+        var command = new UpdateCategoryCommand(id, request.Name);
 
         var result = await Sender.Send(command);
 
