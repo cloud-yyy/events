@@ -39,7 +39,6 @@ public class CategoryRepository(
 
     public void Update(Category category)
     {
-        _context.Categories.Attach(category);
         _context.Categories.Entry(category).State = EntityState.Modified;
     }
 
