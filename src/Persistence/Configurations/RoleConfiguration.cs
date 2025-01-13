@@ -16,8 +16,16 @@ public class RoleConfiguration : IEntityTypeConfiguration<Role>
 
         builder.HasData
         (
-            new Role { Name = RoleNames.Admin },
-            new Role { Name = RoleNames.User }
+            new Role
+            { 
+                Id = new Guid("62e8f843-f88f-4c97-86ab-358eb2bf3e66"), 
+                Name = RoleNames.Admin
+            },
+            new Role 
+            { 
+                Id = new Guid("94c2d1fa-7598-432e-a5b8-9ad619ecbe33"), 
+                Name = RoleNames.User 
+            }
         );
     }
 }

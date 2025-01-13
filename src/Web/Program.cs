@@ -5,6 +5,7 @@ using Domain.Constants;
 using Domain.Entities;
 using DotNetEnv;
 using Infrastructure.Extensions;
+using Microsoft.EntityFrameworkCore;
 using Persistence;
 using Persistence.Extensions;
 using Presentation.Extensions;
@@ -48,7 +49,7 @@ async Task ConfigureDatabase(IServiceScope scope)
 {
     using var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
 
-    context.Database.EnsureCreated();
+    await context.Database.MigrateAsync();
 
     if (!context.Users.Any())
     {
