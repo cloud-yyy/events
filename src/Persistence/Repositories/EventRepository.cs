@@ -60,7 +60,7 @@ public class EventRepository(
 
     public void Update(Event @event)
     {
-        _context.Events.Entry(@event).State = EntityState.Modified;
+        _context.Events.Update(@event);
     }
 
     public void Delete(Event @event)

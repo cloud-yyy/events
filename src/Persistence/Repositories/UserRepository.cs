@@ -29,6 +29,6 @@ public class UserRepository(
 
     public void Update(User user)
     {
-        _context.Users.Entry(user).State = EntityState.Modified;
+        _context.Users.Update(user);
     }
 }
